@@ -68,7 +68,6 @@ handlers.startNewGame = function(args)
         PlayFabId: currentPlayerId,
         Data: {
 			"nextID":"160",
-			"tuto":"true",
 			"cityMap": city,
 		}
 	});
@@ -92,6 +91,15 @@ handlers.startNewGame = function(args)
 			"missile_niv":""
         },
 		Permission:"Public"
+	});
+	
+	
+	updateUserDataResult = server.UpdateUserData({
+		PlayFabId: currentPlayerId,
+        Data: {
+			"tuto":"true"
+        },
+		Permission:"Private"
 	});
 }
 
