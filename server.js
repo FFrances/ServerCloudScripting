@@ -97,7 +97,9 @@ handlers.startNewGame = function(args)
 	updateUserDataResult = server.UpdateUserData({
 		PlayFabId: currentPlayerId,
         Data: {
-			"tuto":"true"
+			"tuto":"true",
+			"missile_prod_timestamp":"0",
+			"missile_prod_list":""
         },
 		Permission:"Private"
 	});
