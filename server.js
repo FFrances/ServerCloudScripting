@@ -148,11 +148,12 @@ handlers.removeCityBuilding =function(args)
 	var playerDataMap = JSON.parse(playerData.Data["cityMap"].Value);
 	
 	var found = false;
+	var removed = null;
 	for(var i = playerDataMap.entitiesOnMap.length -1 ; i>=0; i--)
 	{
 		if(playerDataMap.entitiesOnMap[i].id == entityID.id)
 		{
-			playerDataMap.entitiesOnMap.splice(i, 1);
+			removed = playerDataMap.entitiesOnMap.splice(i, 1);
 			found = true;
 			break;
 		}
@@ -167,7 +168,7 @@ handlers.removeCityBuilding =function(args)
 		});
 	}
     
-	return {hasBeenRemoved:found};
+	return {hasBeenRemoved:found, RemovedPlayerEntity:removed};
 }
 handlers.addDefBuilding =function(args)
 {
