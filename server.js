@@ -69,12 +69,6 @@ handlers.startNewGame = function(args)
         Data: {
 			"nextID":"160",
 			"cityMap": city,
-		}
-	});
-	
-	updateUserDataResult = server.UpdateUserReadOnlyData({
-        PlayFabId: currentPlayerId,
-        Data: {
 			"defMap": def,
 			"whaleMap": whale,
 			"mineMap": JSON.stringify(createEmptyMap())
@@ -135,7 +129,8 @@ handlers.addCityBuilding =function(args)
         Data: {
             "cityMap": JSON.stringify(playerDataCityMap),
 			"nextID": nextID + ""
-        }
+        },
+		Permission:"Public"
     });
 	return {idcheck:nextID};
 }
@@ -163,7 +158,8 @@ handlers.removeCityBuilding =function(args)
 			PlayFabId: currentPlayerId,
 			Data: {
 			    "cityMap": JSON.stringify(playerDataMap)
-			}
+			},
+			Permission:"Public"
 		});
 	}
     
@@ -190,7 +186,8 @@ handlers.addDefBuilding =function(args)
         Data: {
             "defMap": JSON.stringify(playerDataCityMap),
 			"nextID": nextID + ""
-        }
+        },
+		Permission:"Public"
     });
 	return {idcheck:nextID};
 }
@@ -217,7 +214,8 @@ handlers.removeDefBuilding =function(args)
 			PlayFabId: currentPlayerId,
 			Data: {
 			    "defMap": JSON.stringify(playerDataMap)
-			}
+			},
+			Permission:"Public"
 		});
 	}
     
@@ -244,7 +242,8 @@ handlers.addWhaleBuilding =function(args)
         Data: {
             "whaleMap": JSON.stringify(playerDataCityMap),
 			"nextID": nextID + ""
-        }
+        },
+		Permission:"Public"
     });
 	return {idcheck:nextID};
 }
@@ -271,7 +270,8 @@ handlers.removeWhaleBuilding =function(args)
 			PlayFabId: currentPlayerId,
 			Data: {
 			    "whaleMap": JSON.stringify(playerDataMap)
-			}
+			},
+			Permission:"Public"
 		});
 	}
     
@@ -298,7 +298,8 @@ handlers.addMineBuilding =function(args)
         Data: {
             "mineMap": JSON.stringify(playerDataCityMap),
 			"nextID": nextID + ""
-        }
+        },
+		Permission:"Public"
     });
 	return {idcheck:nextID};
 }
@@ -325,7 +326,8 @@ handlers.removeMineBuilding =function(args)
 			PlayFabId: currentPlayerId,
 			Data: {
 			    "mineMap": JSON.stringify(playerDataMap)
-			}
+			},
+			Permission:"Public"
 		});
 	}
     
@@ -366,7 +368,8 @@ handlers.changeStateEntity =function(args)
 		data[mapKey] = value;
 		var updateUserDataResult = server.UpdateUserReadOnlyData({
 			PlayFabId: currentPlayerId,
-			Data: data
+			Data: data,
+			Permission:"Public"
 		});
 		return true;
 	}
@@ -407,118 +410,12 @@ handlers.moveEntity =function(args)
 		data[mapKey] = value;
 		var updateUserDataResult = server.UpdateUserReadOnlyData({
 			PlayFabId: currentPlayerId,
-			Data: data
+			Data: data,
+			Permission:"Public"
 		});
 		return true;
 	}
 	return false;
-}
-
-// This is a function that the game client would call whenever a player completes
-// a level. It updates a setting in the player's data that only game server
-// code can write - it is read-only on the client - and it updates a player
-// statistic that can be used for leaderboards. 
-//
-// A funtion like this could be extended to perform validation on the 
-// level completion data to detect cheating. It could also do things like 
-// award the player items from the game catalog based on their performance.
-handlers.completedLevel = function (args) {
-
-    // "args" is set to the value of the "Params" field of the object passed in to 
-    // RunCloudScript from the client.  It contains whatever properties you want to pass 
-    // into your Cloud Script function. In this case it contains information about 
-    // the level a player has completed.
-    var level = args.levelName;
-    var monstersKilled = args.monstersKilled;
-
-    // The "server" object has functions for each PlayFab server API 
-    // (https://api.playfab.com/Documentation/Server). It is automatically 
-    // authenticated as your title and handles all communication with 
-    // the PlayFab API, so you don't have to write the code to make web requests. 
-    var updateUserDataResult = server.UpdateUserInternalData({
-        PlayFabId: currentPlayerId,
-        Data: {
-            lastLevelCompleted: level
-        }
-    });
-
-    log.debug("Set lastLevelCompleted for player " + currentPlayerId + " to " + level);
-
-    server.UpdateUserStatistics({
-        PlayFabId: currentPlayerId,
-        UserStatistics: {
-            level_monster_kills: monstersKilled
-        }
-    });
-
-    log.debug("Updated level_monster_kills stat for player " + currentPlayerId + " to " + monstersKilled);
-}
-
-
-// In addition to the Cloud Script handlers, you can define your own functions and call them from your handlers. 
-// This makes it possible to share code between multiple handlers and to improve code organization.
-handlers.updatePlayerMove = function (args) {
-    var validMove = processPlayerMove(args);
-    return { validMove: validMove };
-}
-
-
-
-// This is a helper function that verifies that the player's move wasn't made
-// too quickly following their previous move, according to the rules of the game.
-// If the move is valid, then it updates the player's statistics and profile data.
-// This function is called from the "UpdatePlayerMove" handler above and also is 
-// triggered by the "RoomEventRaised" Photon room event in the Webhook handler
-// below. For this example, the script defines the cooldown period (playerMoveCooldownInSeconds)
-// as 15 seconds. A recommended approach for values like this would be to create them in Title
-// Data, so that they can be queries in the script with a call to
-// https://api.playfab.com/Documentation/Server/method/GetTitleData. This would allow you to
-// make adjustments to these values over time, without having to edit, test, and roll out an
-// updated script.
-function processPlayerMove(playerMove) {
-    var now = Date.now();
-    var playerMoveCooldownInSeconds = 15;
-
-    var playerData = server.GetUserInternalData({
-        PlayFabId: currentPlayerId,
-        Keys: ["last_move_timestamp"]
-    });
-
-    var lastMoveTimestampSetting = playerData.Data["last_move_timestamp"];
-
-    if (lastMoveTimestampSetting) {
-        var lastMoveTime = Date.parse(lastMoveTimestampSetting.Value);
-        var timeSinceLastMoveInSeconds = (now - lastMoveTime) / 1000;
-        log.debug("lastMoveTime: " + lastMoveTime + " now: " + now + " timeSinceLastMoveInSeconds: " + timeSinceLastMoveInSeconds);
-
-        if (timeSinceLastMoveInSeconds < playerMoveCooldownInSeconds) {
-            log.error("Invalid move - time since last move: " + timeSinceLastMoveInSeconds + "s less than minimum of " + playerMoveCooldownInSeconds + "s.")
-            return false;
-        }
-    }
-
-    var playerStats = server.GetUserStatistics({
-        PlayFabId: currentPlayerId
-    }).UserStatistics;
-
-    if (playerStats.movesMade)
-        playerStats.movesMade += 1;
-    else
-        playerStats.movesMade = 1;
-
-    server.UpdateUserStatistics({
-        PlayFabId: currentPlayerId,
-        UserStatistics: playerStats
-    });
-
-    server.UpdateUserInternalData({
-        PlayFabId: currentPlayerId,
-        Data: {
-            last_move_timestamp: new Date(now).toUTCString()
-        }
-    });
-
-    return true;
 }
 
 // Photon Webhooks Integration
