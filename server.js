@@ -343,10 +343,7 @@ handlers.changeStateEntity =function(args)
 	if (args.mapType == 3)//MapType.Mine)
 		mapKey = "mineMap";
 	
-	var playerData = server.GetUserReadOnlyData({
-        PlayFabId: currentPlayerId,
-        Keys: [mapKey]
-    });
+	var playerData = getPlayerDataForMap(mapKey);
 	
 	var isUpdateOk = false;
 	var playerDataMap = JSON.parse(playerData.Data[mapKey].Value);
