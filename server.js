@@ -470,6 +470,10 @@ handlers.RoomEventRaised = function (args) {
             break;
     }
 }
+
+handlers.rewardPlayer = function (args) {
+	rewardPlayer(args.id, args.hasWon);
+}
 function rewardPlayer(playerId, hasWon)
 {
 	var playerStats = server.GetPlayerStatistics({
