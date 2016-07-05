@@ -460,11 +460,78 @@ handlers.RoomEventRaised = function (args) {
     log.debug("Event Raised - Game: " + args.GameId + " Event Type: " + eventData.eventType);
 
     switch (eventData.eventType) {
-        case "playerMove":
-            processPlayerMove(eventData);
-            break;
+        case "fightOver":
+			
+			rewardPlayer(currentPlayerId, eventData.hasWon);
+			rewardPlayer(eventData.opponentID, !eventData.hasWon);
+			break;
 
         default:
             break;
     }
+}
+function rewardPlayer(playerId, hasWon)
+{
+	var playerStats = server.GetPlayerStatistics({
+		PlayFabId: playerId,
+		StatisticNames: [
+			"score",
+			"win_streak",
+			"total_win",
+			"defeat_streak",
+			"total_fight"
+		  ]
+		});
+	var score = playerStats.Data["score"];
+	var winStreak = playerStats.Data["win_streak"];
+	var totalWin = playerStats.Data["total_win"];
+	var defeatStreak = playerStats.Data["defeat_streak"];
+	var totalFight = playerStats.Data["total_fight"];
+	totalFight+=1;
+	
+	if(hasWon)
+	{
+		totalWin+=1;
+		winStreak+=1;
+		defeatStreak=0;
+		
+		score+= 1000;
+		if(winStreak >=5)
+			score += 250;
+	}
+	else
+	{
+		winStreak=0;
+		defeatStreak+=1;
+		
+		score += -250;
+		if(defeatStreak >=5)
+			score += -250;
+	}
+	
+	server.UpdatePlayerStatistics(
+	{
+	  PlayFabId: playerId,
+	  Statistics: [
+		{
+		  StatisticName: "score",
+		  Value: score
+		},
+		{
+		  StatisticName: "win_streak",
+		  Value: winStreak
+		},
+		{
+		  StatisticName: "total_win",
+		  Value: totalWin
+		},
+		{
+		  StatisticName: "defeat_streak",
+		  Value: defeatStreak
+		},
+		{
+		  StatisticName: "total_fight",
+		  Value: totalFight
+		}
+	]});
 }
