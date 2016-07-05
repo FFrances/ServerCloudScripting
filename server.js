@@ -471,6 +471,11 @@ handlers.RoomEventRaised = function (args) {
     }
 }
 
+handlers.onFightOver = function (args) {
+	rewardPlayer(currentPlayerId, args.hasWon);
+	rewardPlayer(args.opponentID, !args.hasWon);
+}
+
 function rewardPlayer(playerId, hasWon)
 {
 	var playerStats = server.GetPlayerStatistics({
