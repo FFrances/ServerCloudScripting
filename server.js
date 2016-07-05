@@ -538,6 +538,8 @@ function rewardPlayer(playerId, hasWon)
 		score += -250;
 		if(defeatStreak >=5)
 			score += -250;
+		if(score < 0 )
+			score = 0;
 	}
 	
 	server.UpdatePlayerStatistics(
