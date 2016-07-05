@@ -471,9 +471,6 @@ handlers.RoomEventRaised = function (args) {
     }
 }
 
-handlers.rewardPlayer = function (args) {
-	rewardPlayer(args.id, args.hasWon);
-}
 function rewardPlayer(playerId, hasWon)
 {
 	var playerStats = server.GetPlayerStatistics({
@@ -518,7 +515,7 @@ function rewardPlayer(playerId, hasWon)
 	
 	totalFight+=1;
 	
-	if(hasWon)
+	if( hasWon )
 	{
 		totalWin+=1;
 		winStreak+=1;
