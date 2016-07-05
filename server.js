@@ -482,11 +482,36 @@ function rewardPlayer(playerId, hasWon)
 			"total_fight"
 		  ]
 		});
-	var score = playerStats.Data["score"];
-	var winStreak = playerStats.Data["win_streak"];
-	var totalWin = playerStats.Data["total_win"];
-	var defeatStreak = playerStats.Data["defeat_streak"];
-	var totalFight = playerStats.Data["total_fight"];
+	var score = 0;
+	var winStreak =0; playerStats.Statistics["win_streak"];
+	var totalWin = 0;playerStats.Statistics["total_win"];
+	var defeatStreak = 0;playerStats.Statistics["defeat_streak"];
+	var totalFight = 0;playerStats.Statistics["total_fight"];
+	
+	for(var i=0; i<playerStats.Statistics.length; i++)
+	{
+		if(playerStats.Statistics[i].StatisticName == "score")
+		{
+			score =playerStats.Statistics[i].Value;
+		}
+		else if(playerStats.Statistics[i].StatisticName == "win_streak")
+		{
+			winStreak =playerStats.Statistics[i].Value;
+		}
+		else if(playerStats.Statistics[i].StatisticName == "defeat_streak")
+		{
+			defeatStreak =playerStats.Statistics[i].Value;
+		}
+		else if(playerStats.Statistics[i].StatisticName == "total_fight")
+		{
+			totalFight =playerStats.Statistics[i].Value;
+		}
+		else if(playerStats.Statistics[i].StatisticName == "total_win")
+		{
+			totalWin =playerStats.Statistics[i].Value;
+		}
+	}
+	
 	totalFight+=1;
 	
 	if(hasWon)
