@@ -473,7 +473,8 @@ handlers.RoomEventRaised = function (args) {
 
 handlers.onFightOver = function (args) {
 	rewardPlayer(currentPlayerId, args.hasWon, args.isDefender);
-	rewardPlayer(args.opponentID, !args.hasWon, !args.isDefender);
+	if(args.opponentID != "")
+		rewardPlayer(args.opponentID, !args.hasWon, !args.isDefender);
 	return 0;
 }
 
