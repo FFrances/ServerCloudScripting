@@ -108,6 +108,18 @@ handlers.getPlayerStatistics = function(args)
 	return {Stats:playerStatistics.UserStatistics};
 }
 
+handlers.getLeaderBoardStatistics = function(args)
+{
+	var playfabID = args.PlayerId;
+	var playerStatistics = server.GetPlayerStatistics({
+		PlayFabId: playfabID,
+		  StatisticNames: [
+    			"Rank",
+    			"Xp"]
+	});
+	return {Stats:playerStatistics.UserStatistics};
+}
+
 handlers.addCityBuilding =function(args)
 {
 	var entity = args;
