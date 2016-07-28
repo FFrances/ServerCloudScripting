@@ -124,7 +124,7 @@ handlers.getLeaderBoardStatistics = function(args)
 		});
 		AllplayerStatistics += playerStatistics;
 	}
-	return {playerStatistics};
+	return {AllplayerStatistics};
 }
 
 handlers.addCityBuilding =function(args)
