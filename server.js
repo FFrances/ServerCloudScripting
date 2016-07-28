@@ -110,13 +110,13 @@ handlers.getPlayerStatistics = function(args)
 
 handlers.getLeaderBoardStatistics = function(args)
 {
-	var ID = args.PlayFabId.split(",");
+	var PlayFabIdSplited = args.PlayFabId.split(",");
 	var AllplayerStatistics = "";
-	for (int i = 0; i < ID.length; i++)
+	for (int i = 0; i < PlayFabIdSplited.length; i++)
 	{
 		if (i != 0)
 			playerStatistics += ",";
-		var playfabID = ID[i];
+		var playfabID = PlayFabIdSplited[i];
 		var playerStatistics = server.GetPlayerStatistics({
 			PlayFabId: playfabID,
 		  	StatisticNames: [
