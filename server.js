@@ -122,7 +122,7 @@ handlers.getLeaderBoardStatistics = function(args)
     			"Rank",
     			"Xp"]
 		});
-
+		AllplayerStatistics += playerStatistics;
 	}
 	return {playerStatistics};
 }
