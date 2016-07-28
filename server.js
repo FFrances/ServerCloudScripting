@@ -111,17 +111,17 @@ handlers.getPlayerStatistics = function(args)
 handlers.getLeaderBoardStatistics = function(args)
 {
 	var playfabID = args.PlayFabId.split(",");
-	var AllplayerStatistics = [];
+	var playerStatistics = [];
 	for (var i = 0; i < playfabID.length ; i++)
 	{
-		AllplayerStatistics[i] = server.GetPlayerStatistics({
+		playerStatistics[i] = server.GetPlayerStatistics({
 		PlayFabId: playfabID[i],
 		  StatisticNames: [
     			"Rank",
     			"Xp"]
 		});
 	}
-	return {AllplayerStatistics};
+	return {playerStatistics};
 }
 
 handlers.addCityBuilding =function(args)
