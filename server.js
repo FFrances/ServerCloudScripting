@@ -117,7 +117,7 @@ handlers.getLeaderBoardStatistics = function(args)
     			"Rank",
     			"Xp"]
 	});
-	return {StatsLeaderBoard:playerStatistics};
+	return {playerStatistics};
 }
 
 handlers.addCityBuilding =function(args)
