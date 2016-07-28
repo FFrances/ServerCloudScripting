@@ -115,7 +115,7 @@ handlers.getLeaderBoardStatistics = function(args)
 	for (int i = 0; i < PlayFabIdSplited.length; i++)
 	{
 		if (i != 0)
-			playerStatistics += ",";
+			AllplayerStatistics += ",";
 		var playfabID = PlayFabIdSplited[i];
 		var playerStatistics = server.GetPlayerStatistics({
 			PlayFabId: playfabID,
