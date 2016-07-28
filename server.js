@@ -116,7 +116,7 @@ handlers.getLeaderBoardStatistics = function(args)
 	{
 		if (i > 0)
 			AllplayerStatistics += ",";
-		var playerStatistics += server.GetPlayerStatistics({
+		var playerStatistics = server.GetPlayerStatistics({
 		PlayFabId: playfabID[i],
 		  StatisticNames: [
     			"Rank",
