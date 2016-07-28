@@ -116,13 +116,12 @@ handlers.getLeaderBoardStatistics = function(args)
 	{
 		if (i > 0)
 			AllplayerStatistics += ",";
-		var playerStatistics = server.GetPlayerStatistics({
+		AllplayerStatistics += server.GetPlayerStatistics({
 		PlayFabId: playfabID[i],
 		  StatisticNames: [
     			"Rank",
     			"Xp"]
 		});
-		AllplayerStatistics += playerStatistics;
 	}
 	return {AllplayerStatistics};
 }
