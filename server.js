@@ -608,6 +608,10 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		  Value: defeatStreak
 		},
 		{
+		  StatisticName: "Rank",
+		  Value: rank
+		},
+		{
 		  StatisticName: "total_fight",
 		  Value: totalFight
 		}
