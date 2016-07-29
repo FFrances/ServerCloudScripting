@@ -555,7 +555,7 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		}
 		else if(playerStats.Statistics[i].StatisticName == "Rank")
 		{
-			totalWin =playerStats.Statistics[i].Value;
+			rank =playerStats.Statistics[i].Value;
 		}
 		else if(playerStats.Statistics[i].StatisticName.startsWith("missile_amount"))
 		{
