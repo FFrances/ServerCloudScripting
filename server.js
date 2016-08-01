@@ -518,7 +518,7 @@ function rewardPlayer(playerId, hasWon, isDefending)
 			"total_fight",
 			"Rank"
 		  ];
-	log.debug(splitted);
+
 	var playerStats = server.GetPlayerStatistics({
 		PlayFabId: playerId,
 		StatisticNames: stats.concat(splitted)
@@ -564,7 +564,6 @@ function rewardPlayer(playerId, hasWon, isDefending)
 			if(value>0)
 				value -= 1;
 			missiles.push({StatisticName: name, Value: value });
-			log.debug(name);
 		}
 	}
 	
