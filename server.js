@@ -117,7 +117,7 @@ handlers.getLeaderBoardStatistics = function(args)
 		playerStatistics[i] = server.GetPlayerStatistics({
 		PlayFabId: playfabID[i],
 		  StatisticNames: [
-    			"Rank",
+    			"score",
     			"Xp"]
 		});
 	}
