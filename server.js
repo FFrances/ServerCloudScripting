@@ -454,20 +454,6 @@ handlers.onFightOver = function (args) {
 
 function rewardPlayer(playerId, hasWon, isDefending)
 {
-	var playerEquippedMissile = server.GetUserData({
-		PlayFabId: playerId,
-		Keys:["missile_att", "missile_def"]
-		});
-
-	var splitted
-	if(isDefending)
-	{
-		splitted = playerEquippedMissile.Data["missile_def"].Value.split(",");
-	}
-	else 
-	{
-		splitted = playerEquippedMissile.Data["missile_att"].Value.split(",");
-	}
 	var stats = [
 			"score",
 			"win_streak",
@@ -479,7 +465,7 @@ function rewardPlayer(playerId, hasWon, isDefending)
 
 	var playerStats = server.GetPlayerStatistics({
 		PlayFabId: playerId,
-		StatisticNames: stats.concat(splitted)
+		StatisticNames: stats
 		});
 	
 	var score = 0;
@@ -488,7 +474,6 @@ function rewardPlayer(playerId, hasWon, isDefending)
 	var defeatStreak = 0;//playerStats.Statistics["defeat_streak"];
 	var totalFight = 0;//playerStats.Statistics["total_fight"];
 	var rank = 0;
-	var missiles = new Array();
 	for(var i=0; i<playerStats.Statistics.length; i++)
 	{
 		if(playerStats.Statistics[i].StatisticName == "score")
@@ -514,14 +499,6 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		else if(playerStats.Statistics[i].StatisticName == "Rank")
 		{
 			rank =playerStats.Statistics[i].Value;
-		}
-		else if(playerStats.Statistics[i].StatisticName.startsWith("missile_amount"))
-		{
-			var name = playerStats.Statistics[i].StatisticName;
-			var value = playerStats.Statistics[i].Value;
-			if(value>0)
-				value -= 1;
-			missiles.push({StatisticName: name, Value: value });
 		}
 	}
 	
@@ -578,6 +555,6 @@ function rewardPlayer(playerId, hasWon, isDefending)
 	server.UpdatePlayerStatistics(
 	{
 	  PlayFabId: playerId,
-	  Statistics: toUpdate.concat(missiles)
+	  Statistics: toUpdate
 	});
 }
