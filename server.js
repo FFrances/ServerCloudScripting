@@ -53,9 +53,7 @@ handlers.startNewGame = function(args)
 		PlayFabId: currentPlayerId,
         Data: {
 			"name":"$no_name",
-			"missile_att":"",
-			"missile_def":"",
-			"missile_niv":""
+			"missile_data":""
         },
 		Permission:"Public"
 	});
@@ -64,9 +62,7 @@ handlers.startNewGame = function(args)
 	updateUserDataResult = server.UpdateUserData({
 		PlayFabId: currentPlayerId,
         Data: {
-			"tuto":"true",
-			"missile_prod_timestamp":"0",
-			"missile_prod_list":""
+			"tuto":"true"
         },
 		Permission:"Private"
 	});
