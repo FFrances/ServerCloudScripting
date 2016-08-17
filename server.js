@@ -380,6 +380,8 @@ handlers.changeStateEntity = function (args)
 		mapKey = "whaleMap";
 	if (args.mapType == 3)//MapType.Mine)
 		mapKey = "mineMap";
+	if (args.mapType == 4)//MapType.Manta)
+	    mapKey = "mantaMap";
 
 	var playerData = getPlayerDataForMap(mapKey);
 
@@ -420,6 +422,8 @@ handlers.moveEntity =function(args)
 		mapKey = "whaleMap";
 	if (args.mapType == 3)//MapType.Mine)
 		mapKey = "mineMap";
+	if (args.mapType == 4)//MapType.Manta)
+	    mapKey = "mantaMap";
 
 	var playerData = server.GetUserReadOnlyData({
         PlayFabId: currentPlayerId,
