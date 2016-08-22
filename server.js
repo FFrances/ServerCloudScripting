@@ -68,13 +68,19 @@ handlers.startNewGame = function(args)
 	});
 }
 
-handlers.getPlayerStatistics = function(args)
+handlers.getRank = function(args)
 {
 	var playfabID = args.playerID;
-	var playerStatistics = server.GetPlayerStatistics({
-		PlayFabId: playfabID
-	});
-	return {Stats:playerStatistics.UserStatistics};
+	var stats = [
+			"Rank"
+		  ];
+
+	var playerStats = server.GetPlayerStatistics({
+		PlayFabId: playerId,
+		StatisticNames: stats
+		});
+		
+	return {rank: playerStats.Statistics[0].Value};
 }
 
 handlers.getLeaderBoardStatistics = function(args)
@@ -509,6 +515,17 @@ handlers.onFightOver = function (args) {
 	return 0;
 }
 
+function getFightStat(playerId, stats)
+{
+	
+	var playerStats = server.GetPlayerStatistics({
+		PlayFabId: playerId,
+		StatisticNames: stats
+		});
+		
+	return playerStats;
+}
+
 function rewardPlayer(playerId, hasWon, isDefending)
 {
 	var stats = [
@@ -517,20 +534,18 @@ function rewardPlayer(playerId, hasWon, isDefending)
 			"total_win",
 			"defeat_streak",
 			"total_fight",
-			"Rank"
+			"Rank",
+			"best_rank"
 		  ];
-
-	var playerStats = server.GetPlayerStatistics({
-		PlayFabId: playerId,
-		StatisticNames: stats
-		});
-
+	
+	var playerStats = getFightStat(playerId, stats);
 	var score = 0;
 	var winStreak =0; //playerStats.Statistics["win_streak"];
 	var totalWin = 0;//playerStats.Statistics["total_win"];
 	var defeatStreak = 0;//playerStats.Statistics["defeat_streak"];
 	var totalFight = 0;//playerStats.Statistics["total_fight"];
 	var rank = 0;
+	var bestRank = 0;
 	for(var i=0; i<playerStats.Statistics.length; i++)
 	{
 		if(playerStats.Statistics[i].StatisticName == "score")
@@ -557,8 +572,13 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		{
 			rank =playerStats.Statistics[i].Value;
 		}
+		else if(playerStats.Statistics[i].StatisticName == "best_rank")
+		{
+			bestRank =playerStats.Statistics[i].Value;
+		}
 	}
-
+	if(bestRank < rank)
+		bestRank = rank;
 	totalFight+=1;
 
 	if( hasWon )
@@ -606,7 +626,12 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		{
 		  StatisticName: "total_fight",
 		  Value: totalFight
+		},
+		{
+		  StatisticName: "best_rank",
+		  Value: bestRank
 		}
+		
 	];
 
 	server.UpdatePlayerStatistics(
