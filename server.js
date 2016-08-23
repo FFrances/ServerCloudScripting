@@ -545,7 +545,7 @@ function rewardPlayer(playerId, hasWon, isDefending)
 	var defeatStreak = 0;//playerStats.Statistics["defeat_streak"];
 	var totalFight = 0;//playerStats.Statistics["total_fight"];
 	var rank = 0;
-	var bestRank = 0;
+	var bestRank = 0;//playerStats.Statistics["best_rank"];
 	for(var i=0; i<playerStats.Statistics.length; i++)
 	{
 		if(playerStats.Statistics[i].StatisticName == "score")
@@ -577,8 +577,6 @@ function rewardPlayer(playerId, hasWon, isDefending)
 			bestRank =playerStats.Statistics[i].Value;
 		}
 	}
-	if(bestRank < rank)
-		bestRank = rank;
 	totalFight+=1;
 
 	if( hasWon )
@@ -601,6 +599,9 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		if(score < 0 )
 			score = 0;
 	}
+	
+	if(bestRank < rank)
+		bestRank = rank;
 
 	var toUpdate = [
 		{
