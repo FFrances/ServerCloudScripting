@@ -492,6 +492,14 @@ handlers.RoomLeft = function (args) {
 // Note: currentPlayerId is undefined in this function
 handlers.RoomClosed = function (args) {
     log.debug("Room Closed - Game: " + args.GameId);
+	
+	if (args.State.CustomProperties.C6)
+	{
+		var winnerId = args.State.CustomProperties.C7;
+		var loserId = args.State.CustomProperties.C8;
+		rewardPlayer(winnerId, args.hasWon, false);
+		rewardPlayer(loserId,  !args.hasWon, false);
+	}
 }
 
 // Triggered automatically when a Photon room game property is updated.
@@ -544,7 +552,7 @@ function rewardPlayer(playerId, hasWon, isDefending)
 	var totalWin = 0;//playerStats.Statistics["total_win"];
 	var defeatStreak = 0;//playerStats.Statistics["defeat_streak"];
 	var totalFight = 0;//playerStats.Statistics["total_fight"];
-	var rank = 0;
+	var rank = 0;//playerStats.Statistics["Rank"];
 	var bestRank = 0;//playerStats.Statistics["best_rank"];
 	for(var i=0; i<playerStats.Statistics.length; i++)
 	{
@@ -594,6 +602,7 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		winStreak=0;
 		defeatStreak+=1;
 		score += -250;
+		//Rank cost was paid at the start of the fight if rank was >= 12
 		if(defeatStreak >=5)
 			score += -250;
 		if(score < 0 )
