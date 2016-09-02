@@ -492,7 +492,6 @@ handlers.RoomLeft = function (args) {
 // Note: currentPlayerId is undefined in this function
 handlers.RoomClosed = function (args) {
     log.debug("Room Closed - Game: " + args.GameId);
-	
 	if (args.State.CustomProperties.C6 == true)
 	{
 		var winnerId = args.State.CustomProperties.C7;
@@ -506,6 +505,14 @@ handlers.RoomClosed = function (args) {
 // Note: currentPlayerId is undefined in this function
 handlers.RoomPropertyUpdated = function (args) {
     log.debug("Room Property Updated - Game: " + args.GameId);
+	
+	if (args.State.CustomProperties.C6 == true)
+	{
+		var winnerId = args.State.CustomProperties.C7;
+		var loserId = args.State.CustomProperties.C8;
+		rewardPlayer(winnerId, true, false);
+		rewardPlayer(loserId,  false, false);
+	}
 }
 
 // Triggered by calling "OpRaiseEvent" on the Photon client. The "args.Data" property is
