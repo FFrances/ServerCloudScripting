@@ -493,12 +493,12 @@ handlers.RoomLeft = function (args) {
 handlers.RoomClosed = function (args) {
     log.debug("Room Closed - Game: " + args.GameId);
 	
-	if (args.State.CustomProperties.C6)
+	if (args.State.CustomProperties.C6 == true)
 	{
 		var winnerId = args.State.CustomProperties.C7;
 		var loserId = args.State.CustomProperties.C8;
-		rewardPlayer(winnerId, args.hasWon, false);
-		rewardPlayer(loserId,  !args.hasWon, false);
+		rewardPlayer(winnerId, true, false);
+		rewardPlayer(loserId,  false, false);
 	}
 }
 
