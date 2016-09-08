@@ -496,24 +496,6 @@ handlers.UpdateUserMultipleData =function(args)
 		return result;
 	log.info("UserDataCalled.");
 	
-	// Update UserReadOnlyData
-	var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls
-	for (var key in UserReadOnlyDataCalls) {
-		var value = UserReadOnlyDataCalls[key];
-		if (key == "moveEntity" )
-		{
-			for (var parameters in value) {
-				moveEntity(parameters);
-			}
-		}
-		if (key == "changeStateEntity" )
-		{
-			for (var parameters in value) {
-				changeStateEntity(parameters);
-			}
-		}
-		log.info("UserReadOnlyDataCalls.");
-	}
 	
 	// Update Currencies
 	var CurrencyChange = args.CurrencyChange
@@ -545,6 +527,28 @@ handlers.UpdateUserMultipleData =function(args)
 	log.info("CurrencyChanged.");
 	
 	
+	// Update UserReadOnlyData
+	var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls
+	for (var key in UserReadOnlyDataCalls) {
+		var value = UserReadOnlyDataCalls[key];
+		if (key == "moveEntity" )
+		{
+			for (var parameters in value) {
+				var result = moveEntity(parameters);
+				if (result.status != "OK")
+					return result;
+			}
+		}
+		if (key == "changeStateEntity" )
+		{
+			for (var parameters in value) {
+				var result = changeStateEntity(parameters);
+				if (result.status != "OK")
+					return result;
+			}
+		}
+		log.info("UserReadOnlyDataCalls.");
+	}
 	
 	return result;
 }
