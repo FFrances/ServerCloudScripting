@@ -498,7 +498,7 @@ handlers.UpdateUserMultipleData =function(args)
 	
 	
 	// Update Currencies
-	var CurrencyChange = args.CurrencyChange
+	var CurrencyChange = args.CurrencyChange;
 	for (var key in CurrencyChange) {
 		var value = CurrencyChange[key];
 		// key = currency
@@ -528,7 +528,7 @@ handlers.UpdateUserMultipleData =function(args)
 	
 	
 	// Update UserReadOnlyData
-	var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls
+	var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls;
 	for (var key in UserReadOnlyDataCalls) {
 		var value = UserReadOnlyDataCalls[key];
 		if (key == "moveEntity" )
