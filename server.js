@@ -470,9 +470,11 @@ handlers.moveEntity =function(args)
 // public Dictionary<string, string> UserDataCalls;
 // public UpdateUserStatisticsRequest PlayerStatsCalls;
 // public Dictionary<string, float> CurrencyChange;
-// public Dictionary<int, Dictionary<string, object>> ScriptCallsPerMapType;
+// public Dictionary<string, List<object>> UserReadOnlyDataCalls;
 handlers.UpdateUserMultipleData =function(args)
 {
+	var log = "";
+	
 	// Update Player Stats
 	if (args.PlayerStatsCalls != null)
 	{
@@ -483,6 +485,7 @@ handlers.UpdateUserMultipleData =function(args)
 		});
 		if (result.status != "OK")
 			return result;
+		log.info("PlayerStatsCalled.");
 	}
 	
 	// Update UserData
@@ -496,6 +499,29 @@ handlers.UpdateUserMultipleData =function(args)
 		});
 		if (result.status != "OK")
 			return result;
+		log.info("UserDataCalled.");
+	}
+	
+	// Update UserReadOnlyData
+	if (args.UserReadOnlyDataCalls != null)
+	{
+		var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls
+		for (var key in UserReadOnlyDataCalls) {
+			var value = UserReadOnlyDataCalls[key];
+			if (key == "moveEntity" )
+			{
+				for (var parameters in value) {
+					moveEntity(parameters);
+				}
+			}
+			if (key == "changeStateEntity" )
+			{
+				for (var parameters in value) {
+					changeStateEntity(parameters);
+				}
+			}
+			log.info("UserReadOnlyDataCalls.");
+		}
 	}
 	
 	// Update Currencies
@@ -526,9 +552,11 @@ handlers.UpdateUserMultipleData =function(args)
 			
 			if (result.status != "OK")
 				return result;
-				
 		}
+		log.info("CurrencyChanged.");
 	}
+	
+	
 	
 	return result;
 }
