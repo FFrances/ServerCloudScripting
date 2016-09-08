@@ -463,6 +463,48 @@ handlers.moveEntity =function(args)
 	return false;
 }
 
+
+// player id = currentPlayerId
+
+// Incoming Data's
+// public Dictionary<string, string> UserDataCalls;
+// public UpdateUserStatisticsRequest PlayerStatsCalls;
+// public Dictionary<string, float> CurrencyChange;
+// public Dictionary<int, Dictionary<string, object>> ScriptCallsPerMapType;
+handlers.UpdateUserMultipleData =function(args)
+{
+	CurrencyChange = args.CurrencyChange
+	for (var key in CurrencyChange) {
+		var value = CurrencyChange[key];
+		// key = currency
+		// value = value to change
+		var result = server.AddUserVirtualCurrency({
+			PlayFabId: currentPlayerId,
+			VirtualCurrency: key,
+			Amount: value
+		});
+		
+		// Result Contains		
+		// {
+		//   "code": 200,
+		//   "status": "OK",
+		//   "data": {
+		// 	"PlayFabId": "B456AE0",
+		// 	"VirtualCurrency": "GC",
+		// 	"BalanceChange": 10,
+		// 	"Balance": 1500
+		//   }
+		// }
+		
+		if (result.code != 200)
+			return result;
+			
+	}
+	
+	return result;
+}
+
+
 // Photon Webhooks Integration
 //
 // The following functions are examples of Photon Cloud Webhook handlers.
@@ -641,49 +683,4 @@ function rewardPlayer(playerId, hasWon, isDefending)
 	  PlayFabId: playerId,
 	  Statistics: toUpdate
 	});
-}
-
-// player id = currentPlayerId
-
-// Incoming Data's
-// public Dictionary<string, string> UserDataCalls;
-// public UpdateUserStatisticsRequest PlayerStatsCalls;
-// public Dictionary<string, float> CurrencyChange;
-// public Dictionary<int, Dictionary<string, object>> ScriptCallsPerMapType;
-handlers.UpdateUserMultipleData =function(args)
-{
-	UserDataCalls = args.UserDataCalls
-	PlayerStatsCalls = args.PlayerStatsCalls
-	ScriptCallsPerMapType = args.ScriptCallsPerMapType
-	CurrencyChange = args.CurrencyChange
-	
-	for (var key in CurrencyChange) {
-		var value = CurrencyChange[key];
-		
-		// key = currency
-		// value = value to change
-		var result = server.AddUserVirtualCurrency({
-			PlayFabId: currentPlayerId,
-			VirtualCurrency: key
-			Amount: value,
-		});
-		
-		// Result Contains		
-		// {
-		//   "code": 200,
-		//   "status": "OK",
-		//   "data": {
-		// 	"PlayFabId": "B456AE0",
-		// 	"VirtualCurrency": "GC",
-		// 	"BalanceChange": 10,
-		// 	"Balance": 1500
-		//   }
-		// }
-		
-		if (result.code != 200)
-			return result;
-			
-	}
-	
-	return result;
 }
