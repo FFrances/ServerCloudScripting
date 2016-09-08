@@ -490,7 +490,7 @@ handlers.UpdateUserMultipleData =function(args)
 	
 	// Update UserData
 	var UserDataCalls = args.UserDataCalls;
-	if (UserDataCalls.length > 0)
+	if (Object.keys(UserDataCalls).length > 0)
 	{
 		var result = server.UpdateUserData({
 			PlayFabId: currentPlayerId,
@@ -501,7 +501,7 @@ handlers.UpdateUserMultipleData =function(args)
 	
 	// Update Currencies
 	var CurrencyChange = args.CurrencyChange;
-	if (CurrencyChange.length > 0)
+	if (Object.keys(CurrencyChange).length > 0)
 	{
 		for (var key in CurrencyChange) {
 			var value = CurrencyChange[key];
@@ -529,7 +529,7 @@ handlers.UpdateUserMultipleData =function(args)
 	
 	// Update UserReadOnlyData
 	var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls;
-	if (UserReadOnlyDataCalls.length > 0)
+	if (Object.keys(UserReadOnlyDataCalls).length > 0)
 	{
 		for (var key in UserReadOnlyDataCalls) {
 			var value = UserReadOnlyDataCalls[key];
