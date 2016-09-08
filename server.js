@@ -481,7 +481,7 @@ handlers.UpdateUserMultipleData =function(args)
 			PlayFabId: currentPlayerId,
 			Statistics: PlayerStatsCalls.UserStatistics
 		});
-		if (result.status != OK)
+		if (result.status != "OK")
 			return result;
 	}
 	
@@ -494,7 +494,7 @@ handlers.UpdateUserMultipleData =function(args)
 			Data : UserDataCalls,
 			Permission: "Public"
 		});
-		if (result.status != OK)
+		if (result.status != "OK")
 			return result;
 	}
 	
@@ -524,7 +524,7 @@ handlers.UpdateUserMultipleData =function(args)
 				});
 			}
 			
-			if (result.status != OK)
+			if (result.status != "OK")
 				return result;
 				
 		}
