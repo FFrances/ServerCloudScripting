@@ -473,15 +473,12 @@ handlers.moveEntity =function(args)
 // public Dictionary<string, List<object>> UserReadOnlyDataCalls;
 handlers.UpdateUserMultipleData =function(args)
 {
-	var log = "";
-	
 	// Update Player Stats
 	var PlayerStatsCalls = args.PlayerStatsCalls;
 	var result = server.UpdatePlayerStatistics({
 		PlayFabId: currentPlayerId,
 		Statistics: PlayerStatsCalls.UserStatistics
 	});
-	log.info("PlayerStatsCalled.");
 	
 	// Update UserData
 	var UserDataCalls = args.UserDataCalls;
@@ -490,7 +487,6 @@ handlers.UpdateUserMultipleData =function(args)
 		Data : UserDataCalls,
 		Permission: "Public"
 	});
-	log.info("UserDataCalled.");
 	
 	
 	// Update Currencies
@@ -517,7 +513,6 @@ handlers.UpdateUserMultipleData =function(args)
 			});
 		}
 	}
-	log.info("CurrencyChanged.");
 	
 	
 	// Update UserReadOnlyData
@@ -536,7 +531,6 @@ handlers.UpdateUserMultipleData =function(args)
 				var result = changeStateEntity(parameters);
 			}
 		}
-		log.info("UserReadOnlyDataCalls.");
 	}
 	
 	return result;
