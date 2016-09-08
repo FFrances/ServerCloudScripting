@@ -476,85 +476,73 @@ handlers.UpdateUserMultipleData =function(args)
 	var log = "";
 	
 	// Update Player Stats
-	if (args.PlayerStatsCalls != null)
-	{
-		var PlayerStatsCalls = args.PlayerStatsCalls;
-		var result = server.UpdatePlayerStatistics({
-			PlayFabId: currentPlayerId,
-			Statistics: PlayerStatsCalls.UserStatistics
-		});
-		if (result.status != "OK")
-			return result;
-		log.info("PlayerStatsCalled.");
-	}
+	var PlayerStatsCalls = args.PlayerStatsCalls;
+	var result = server.UpdatePlayerStatistics({
+		PlayFabId: currentPlayerId,
+		Statistics: PlayerStatsCalls.UserStatistics
+	});
+	if (result.status != "OK")
+		return result;
+	log.info("PlayerStatsCalled.");
 	
 	// Update UserData
-	if (args.UserDataCalls != null)
-	{
-		var UserDataCalls = args.UserDataCalls;
-		var result = server.UpdateUserData({
-			PlayFabId: currentPlayerId,
-			Data : UserDataCalls,
-			Permission: "Public"
-		});
-		if (result.status != "OK")
-			return result;
-		log.info("UserDataCalled.");
-	}
+	var UserDataCalls = args.UserDataCalls;
+	var result = server.UpdateUserData({
+		PlayFabId: currentPlayerId,
+		Data : UserDataCalls,
+		Permission: "Public"
+	});
+	if (result.status != "OK")
+		return result;
+	log.info("UserDataCalled.");
 	
 	// Update UserReadOnlyData
-	if (args.UserReadOnlyDataCalls != null)
-	{
-		var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls
-		for (var key in UserReadOnlyDataCalls) {
-			var value = UserReadOnlyDataCalls[key];
-			if (key == "moveEntity" )
-			{
-				for (var parameters in value) {
-					moveEntity(parameters);
-				}
+	var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls
+	for (var key in UserReadOnlyDataCalls) {
+		var value = UserReadOnlyDataCalls[key];
+		if (key == "moveEntity" )
+		{
+			for (var parameters in value) {
+				moveEntity(parameters);
 			}
-			if (key == "changeStateEntity" )
-			{
-				for (var parameters in value) {
-					changeStateEntity(parameters);
-				}
-			}
-			log.info("UserReadOnlyDataCalls.");
 		}
+		if (key == "changeStateEntity" )
+		{
+			for (var parameters in value) {
+				changeStateEntity(parameters);
+			}
+		}
+		log.info("UserReadOnlyDataCalls.");
 	}
 	
 	// Update Currencies
-	if (args.CurrencyChange != null) 
-	{
-		var CurrencyChange = args.CurrencyChange
-		for (var key in CurrencyChange) {
-			var value = CurrencyChange[key];
-			// key = currency
-			// value = value to change
-			if(value > 0)
-			{
-				var result = server.AddUserVirtualCurrency({
-					PlayFabId: currentPlayerId,
-					VirtualCurrency: key,
-					Amount: value
-				});
-			}
-			else if (value < 0)
-			{
-				value *= -1;
-				var result = server.SubtractUserVirtualCurrency({
-					PlayFabId: currentPlayerId,
-					VirtualCurrency: key,
-					Amount: value
-				});
-			}
-			
-			if (result.status != "OK")
-				return result;
+	var CurrencyChange = args.CurrencyChange
+	for (var key in CurrencyChange) {
+		var value = CurrencyChange[key];
+		// key = currency
+		// value = value to change
+		if(value > 0)
+		{
+			var result = server.AddUserVirtualCurrency({
+				PlayFabId: currentPlayerId,
+				VirtualCurrency: key,
+				Amount: value
+			});
 		}
-		log.info("CurrencyChanged.");
+		else if (value < 0)
+		{
+			value *= -1;
+			var result = server.SubtractUserVirtualCurrency({
+				PlayFabId: currentPlayerId,
+				VirtualCurrency: key,
+				Amount: value
+			});
+		}
+		
+		if (result.status != "OK")
+			return result;
 	}
+	log.info("CurrencyChanged.");
 	
 	
 	
