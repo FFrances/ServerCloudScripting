@@ -382,7 +382,7 @@ handlers.changeStateEntity = function (args)
 	return changeStateEntity(args);
 }
 
-function changeStateEntity = function (args)
+function changeStateEntity(args)
 {
 	var mapKey = "cityMap";
 	if (args.mapType == 1)//MapType.Defense)
@@ -429,7 +429,7 @@ handlers.moveEntity = function(args)
 	return moveEntity(args);
 }
 
-function moveEntity = function(args)
+function moveEntity(args)
 {
 	var mapKey = "cityMap";
 	if (args.mapType == 1)//MapType.Defense)
