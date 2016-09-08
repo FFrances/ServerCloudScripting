@@ -473,44 +473,61 @@ handlers.moveEntity =function(args)
 // public Dictionary<int, Dictionary<string, object>> ScriptCallsPerMapType;
 handlers.UpdateUserMultipleData =function(args)
 {
-	CurrencyChange = args.CurrencyChange
-	for (var key in CurrencyChange) {
-		var value = CurrencyChange[key];
-		// key = currency
-		// value = value to change
-		if(value > 0)
-		{
-			var result = server.AddUserVirtualCurrency({
-				PlayFabId: currentPlayerId,
-				VirtualCurrency: key,
-				Amount: value
-			});
-		}
-		else if (value < 0)
-		{		
-			var result = server.SubtractUserVirtualCurrency({
-				PlayFabId: currentPlayerId,
-				VirtualCurrency: key,
-				Amount: value
-			});
-		}
-		
-		
-		// Result Contains		
-		// {
-		//   "code": 200,
-		//   "status": "OK",
-		//   "data": {
-		// 	"PlayFabId": "B456AE0",
-		// 	"VirtualCurrency": "GC",
-		// 	"BalanceChange": 10,
-		// 	"Balance": 1500
-		//   }
-		// }
-		
-		if (result.code != 200)
+	// Update Player Stats
+	if (args.PlayerStatsCalls != null)
+	{
+		var PlayerStatsCalls = args.PlayerStatsCalls;
+		var result = server.UpdatePlayerStatistics({
+			PlayFabId: currentPlayerId,
+			Statistics: PlayerStatsCalls.UserStatistics
+		});
+		if (result.status != OK)
 			return result;
+	}
+	
+	// Update UserData
+	if (args.UserDataCalls != null)
+	{
+		var UserDataCalls = args.UserDataCalls;
+		var result = server.UpdateUserData({
+			PlayFabId: currentPlayerId,
+			Data : UserDataCalls,
+			Permission: "Public"
+		});
+		if (result.status != OK)
+			return result;
+	}
+	
+	// Update Currencies
+	if (args.CurrencyChange != null) 
+	{
+		var CurrencyChange = args.CurrencyChange
+		for (var key in CurrencyChange) {
+			var value = CurrencyChange[key];
+			// key = currency
+			// value = value to change
+			if(value > 0)
+			{
+				var result = server.AddUserVirtualCurrency({
+					PlayFabId: currentPlayerId,
+					VirtualCurrency: key,
+					Amount: value
+				});
+			}
+			else if (value < 0)
+			{
+				value *= -1;
+				var result = server.SubtractUserVirtualCurrency({
+					PlayFabId: currentPlayerId,
+					VirtualCurrency: key,
+					Amount: value
+				});
+			}
 			
+			if (result.status != OK)
+				return result;
+				
+		}
 	}
 	
 	return result;
