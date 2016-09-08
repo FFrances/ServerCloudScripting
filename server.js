@@ -532,20 +532,23 @@ handlers.UpdateUserMultipleData =function(args)
 	if (Object.keys(UserReadOnlyDataCalls).length > 0)
 	{
 		for (var key in UserReadOnlyDataCalls) {
-			var value = UserReadOnlyDataCalls[key];
+			
 			if (key == "moveEntity" )
 			{
-				for (var parameters in value) {
-					var result = moveEntity(parameters);
+				for (var paramKey in UserReadOnlyDataCalls[key]) {
+					var paramValue = UserReadOnlyDataCalls[key][paramKey]
+					var result = moveEntity(paramValue);
 				}
 			}
 			if (key == "changeStateEntity" )
 			{
-				for (var parameters in value) {
-					var result = changeStateEntity(parameters);
+				for (var paramKey in UserReadOnlyDataCalls[key]) {
+					var paramValue = UserReadOnlyDataCalls[key][paramKey]
+					var result = changeStateEntity(paramValue);
 				}
 			}
 		}
+		
 	}
 	
 	return result;
