@@ -481,8 +481,6 @@ handlers.UpdateUserMultipleData =function(args)
 		PlayFabId: currentPlayerId,
 		Statistics: PlayerStatsCalls.UserStatistics
 	});
-	if (result.status != "OK")
-		return result;
 	log.info("PlayerStatsCalled.");
 	
 	// Update UserData
@@ -492,8 +490,6 @@ handlers.UpdateUserMultipleData =function(args)
 		Data : UserDataCalls,
 		Permission: "Public"
 	});
-	if (result.status != "OK")
-		return result;
 	log.info("UserDataCalled.");
 	
 	
@@ -520,9 +516,6 @@ handlers.UpdateUserMultipleData =function(args)
 				Amount: value
 			});
 		}
-		
-		if (result.status != "OK")
-			return result;
 	}
 	log.info("CurrencyChanged.");
 	
@@ -535,16 +528,12 @@ handlers.UpdateUserMultipleData =function(args)
 		{
 			for (var parameters in value) {
 				var result = moveEntity(parameters);
-				if (result.status != "OK")
-					return result;
 			}
 		}
 		if (key == "changeStateEntity" )
 		{
 			for (var parameters in value) {
 				var result = changeStateEntity(parameters);
-				if (result.status != "OK")
-					return result;
 			}
 		}
 		log.info("UserReadOnlyDataCalls.");
