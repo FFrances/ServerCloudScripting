@@ -379,6 +379,11 @@ handlers.removeMantaBuilding = function (args)
 };
 handlers.changeStateEntity = function (args)
 {
+	return changeStateEntity(args);
+}
+
+function changeStateEntity = function (args)
+{
 	var mapKey = "cityMap";
 	if (args.mapType == 1)//MapType.Defense)
 		mapKey = "defMap";
@@ -419,7 +424,12 @@ handlers.changeStateEntity = function (args)
 	return false;
 }
 
-handlers.moveEntity =function(args)
+handlers.moveEntity = function(args)
+{
+	return moveEntity(args);
+}
+
+function moveEntity = function(args)
 {
 	var mapKey = "cityMap";
 	if (args.mapType == 1)//MapType.Defense)
@@ -462,8 +472,6 @@ handlers.moveEntity =function(args)
 	}
 	return false;
 }
-
-
 // player id = currentPlayerId
 
 // Incoming Data's
