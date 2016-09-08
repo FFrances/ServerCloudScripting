@@ -490,53 +490,60 @@ handlers.UpdateUserMultipleData =function(args)
 	
 	// Update UserData
 	var UserDataCalls = args.UserDataCalls;
-	var result = server.UpdateUserData({
-		PlayFabId: currentPlayerId,
-		Data : UserDataCalls,
-		Permission: "Public"
-	});
-	
+	if (UserDataCalls.length > 0)
+	{
+		var result = server.UpdateUserData({
+			PlayFabId: currentPlayerId,
+			Data : UserDataCalls,
+			Permission: "Public"
+		});
+	}
 	
 	// Update Currencies
 	var CurrencyChange = args.CurrencyChange;
-	for (var key in CurrencyChange) {
-		var value = CurrencyChange[key];
-		// key = currency
-		// value = value to change
-		if(value > 0)
-		{
-			var result = server.AddUserVirtualCurrency({
-				PlayFabId: currentPlayerId,
-				VirtualCurrency: key,
-				Amount: value
-			});
-		}
-		else if (value < 0)
-		{
-			value *= -1;
-			var result = server.SubtractUserVirtualCurrency({
-				PlayFabId: currentPlayerId,
-				VirtualCurrency: key,
-				Amount: value
-			});
+	if (CurrencyChange.length > 0)
+	{
+		for (var key in CurrencyChange) {
+			var value = CurrencyChange[key];
+			// key = currency
+			// value = value to change
+			if(value > 0)
+			{
+				var result = server.AddUserVirtualCurrency({
+					PlayFabId: currentPlayerId,
+					VirtualCurrency: key,
+					Amount: value
+				});
+			}
+			else if (value < 0)
+			{
+				value *= -1;
+				var result = server.SubtractUserVirtualCurrency({
+					PlayFabId: currentPlayerId,
+					VirtualCurrency: key,
+					Amount: value
+				});
+			}
 		}
 	}
 	
-	
 	// Update UserReadOnlyData
 	var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls;
-	for (var key in UserReadOnlyDataCalls) {
-		var value = UserReadOnlyDataCalls[key];
-		if (key == "moveEntity" )
-		{
-			for (var parameters in value) {
-				var result = moveEntity(parameters);
+	if (UserReadOnlyDataCalls.length > 0)
+	{
+		for (var key in UserReadOnlyDataCalls) {
+			var value = UserReadOnlyDataCalls[key];
+			if (key == "moveEntity" )
+			{
+				for (var parameters in value) {
+					var result = moveEntity(parameters);
+				}
 			}
-		}
-		if (key == "changeStateEntity" )
-		{
-			for (var parameters in value) {
-				var result = changeStateEntity(parameters);
+			if (key == "changeStateEntity" )
+			{
+				for (var parameters in value) {
+					var result = changeStateEntity(parameters);
+				}
 			}
 		}
 	}
