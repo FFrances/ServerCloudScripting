@@ -686,3 +686,4 @@ handlers.UpdateUserMultipleData =function(args)
 	}
 	
 	return result;
+}
