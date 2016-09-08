@@ -478,11 +478,23 @@ handlers.UpdateUserMultipleData =function(args)
 		var value = CurrencyChange[key];
 		// key = currency
 		// value = value to change
-		var result = server.AddUserVirtualCurrency({
-			PlayFabId: currentPlayerId,
-			VirtualCurrency: key,
-			Amount: value
-		});
+		if(value > 0)
+		{
+			var result = server.AddUserVirtualCurrency({
+				PlayFabId: currentPlayerId,
+				VirtualCurrency: key,
+				Amount: value
+			});
+		}
+		else if (value < 0)
+		{		
+			var result = server.SubtractUserVirtualCurrency({
+				PlayFabId: currentPlayerId,
+				VirtualCurrency: key,
+				Amount: value
+			});
+		}
+		
 		
 		// Result Contains		
 		// {
