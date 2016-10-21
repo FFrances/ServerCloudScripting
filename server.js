@@ -99,6 +99,23 @@ handlers.getLeaderBoardStatistics = function(args)
 	return {playerStatistics};
 }
 
+handlers.getFriendsStatistics = function(args)
+{
+	var playfabID = args.PlayFabId.split(",");
+	var playerStatistics = [];
+	for (var i = 0; i < playfabID.length; i++)
+	{
+		playerStatistics[i] = server.GetPlayerStatistics({
+			PlayFabId: playfabID[i],
+			StatisticNames: [
+				"Xp",
+				"Rank"
+			]
+		});
+	}
+	return {playerStatistics};
+}
+
 handlers.addCityBuilding =function(args)
 {
 	var entity = args;
