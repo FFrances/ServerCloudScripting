@@ -130,7 +130,7 @@ handlers.addFriend = function(args)
 		friendshipAccepted = true;
 	}
 	else {
-		addFriendToRequest(playfabIDReceiver, playfabIDSender);
+		addFriendToRequest(playfabIDSender, playfabIDReceiver);
 	}
 	return {isNowFriend:friendshipAccepted};
 }
