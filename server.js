@@ -116,6 +116,96 @@ handlers.getFriendsStatistics = function(args)
 	return {playerStatistics};
 }
 
+handlers.addFriend = function(args)
+{
+	var playfabIDSender = currentPlayerId;
+	var playfabIDReceiver = args.FriendPlayFabId;
+	
+	boolean friendshipAccepted = false;
+	if (checkIfPlayerRequestedFriendship(playfabIDSender, playfabIDReceiver) == true)
+	{
+		server.AddFriend({PlayFabId : playfabIDSender, FriendPlayFabId : playfabIDReceiver});
+		server.AddFriend({ PlayFabId : playfabIDReceiver, FriendPlayFabId : playfabIDSender});
+		removeFriendFromRequests(playfabIDSender, playfabIDReceiver);
+		friendshipAccepted = true;
+	}
+	else {
+		addFriendToRequest(playfabIDReceiver, playfabIDSender);
+	}
+	return {isNowFriend:friendshipAccepted}
+}
+
+function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
+{
+	var friendRequests = server.GetUserReadOnlyData({
+		PlayFabId : pPlayerId,
+		Keys : ["friendRequests"]});
+		
+	if (!("friendRequests" in friendRequests.Data) || !(friendRequests.Data["friendRequests"].Value))
+		return false;
+	
+	requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
+	for (int i = 0; i < requests.received.length; i++)
+	{
+		if (requests.received[i] == pPlayerIdToCheck)
+			return true;
+	}
+	return false;
+}
+
+function addFriendToRequest(pFriendID, pPlayerID)
+{
+	var friendRequests = server.GetUserReadOnlyData({
+		PlayFabId : pPlayerID,
+		Keys : ["friendRequests"]});
+		
+	var requests;
+	if (friendRequests.Data["friendRequests"] == undefined)
+		requests = {received: new Array()};
+	else
+		requests = JSON.pars(friendRequests.Data["friendRequests"].Value);
+	
+	requests.received.push(pFriendID);
+	
+	var updateResult = server.UpdateUserReadOnlyData(
+	{
+		PlayFabId: pPlayerID,
+        Data: {
+            "friendRequests": JSON.stringify(requests)
+        },
+		Permission:"Public"
+	})
+}
+
+function removeFriendFromRequests(pPlayerID, pFriendID)
+{
+	var friendRequests = server.GetUserReadOnlyData({
+		PlayFabId : pPlayerId,
+		Keys : ["friendRequests"]});
+
+	requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
+	boolean found = false;
+	for (int i = 0; i < requests.received.length; i++)
+	{
+		if (requests.received[i] == pFriendID)
+		{
+			requests.received.splice(i, 1);
+			found = true;
+			break;
+		}
+	}
+	if (found == true)
+	{
+		var updateUserDataResult = server.UpdateUserReadOnlyData({
+			PlayFabId: pPlayerID,
+			Data: {
+			    "friendRequests": JSON.stringify(requests)
+			},
+			Permission:"Public"
+		});
+	}
+}
+
 handlers.addCityBuilding =function(args)
 {
 	var entity = args;
