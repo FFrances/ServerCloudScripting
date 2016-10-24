@@ -163,7 +163,7 @@ function addFriendToRequest(pFriendID, pPlayerID)
 	if (friendRequests.Data["friendRequests"] == undefined)
 		requests = {received: new Array()};
 	else
-		requests = JSON.pars(friendRequests.Data["friendRequests"].Value);
+		requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
 	
 	requests.received.push(pFriendID);
 	
