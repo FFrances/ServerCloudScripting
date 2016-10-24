@@ -130,7 +130,7 @@ handlers.addFriend = function(args)
 		friendshipAccepted = true;
 	}
 	else {
-		addFriendToRequest(playfabIDSender, playfabIDReceiver);
+		addFriendToRequest(playfabIDReceiver, playfabIDSender);
 	}
 	return {isNowFriend:friendshipAccepted};
 }
@@ -156,7 +156,7 @@ function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 function addFriendToRequest(pFriendID, pPlayerID)
 {
 	var friendRequests = server.GetUserReadOnlyData({
-		PlayFabId : pPlayerID,
+		PlayFabId : pFriendID,
 		Keys : ["friendRequests"]});
 		
 	var requests;
@@ -165,11 +165,11 @@ function addFriendToRequest(pFriendID, pPlayerID)
 	else
 		requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
 	
-	requests.received.push(pFriendID);
+	requests.received.push(pPlayerID);
 	
 	var updateResult = server.UpdateUserReadOnlyData(
 	{
-		PlayFabId: pPlayerID,
+		PlayFabId: pFriendID,
         Data: {
             "friendRequests": JSON.stringify(requests)
         },
