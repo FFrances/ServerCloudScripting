@@ -125,7 +125,13 @@ handlers.addFriend = function(args)
 	if (checkIfPlayerRequestedFriendship(playfabIDSender, playfabIDReceiver) == true)
 	{
 		server.AddFriend({PlayFabId : playfabIDSender, FriendPlayFabId : playfabIDReceiver});
-		//server.AddFriend({ PlayFabId : playfabIDReceiver, FriendPlayFabId : playfabIDSender});
+		try {
+		server.AddFriend({ PlayFabId : playfabIDReceiver, FriendPlayFabId : playfabIDSender});
+		}
+		catch (err)
+		{
+			return err;
+		}
 		removeFriendFromRequests(playfabIDSender, playfabIDReceiver);
 		friendshipAccepted = true;
 	}
