@@ -121,7 +121,7 @@ handlers.addFriend = function(args)
 	var playfabIDSender = currentPlayerId;
 	var playfabIDReceiver = args.FriendPlayFabId;
 	
-	boolean friendshipAccepted = false;
+	var friendshipAccepted = false;
 	if (checkIfPlayerRequestedFriendship(playfabIDSender, playfabIDReceiver) == true)
 	{
 		server.AddFriend({PlayFabId : playfabIDSender, FriendPlayFabId : playfabIDReceiver});
@@ -132,7 +132,7 @@ handlers.addFriend = function(args)
 	else {
 		addFriendToRequest(playfabIDReceiver, playfabIDSender);
 	}
-	return {isNowFriend:friendshipAccepted}
+	return {isNowFriend:friendshipAccepted};
 }
 
 function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
@@ -145,7 +145,7 @@ function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 		return false;
 	
 	requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
-	for (int i = 0; i < requests.received.length; i++)
+	for (var i = 0; i < requests.received.length; i++)
 	{
 		if (requests.received[i] == pPlayerIdToCheck)
 			return true;
@@ -184,8 +184,8 @@ function removeFriendFromRequests(pPlayerID, pFriendID)
 		Keys : ["friendRequests"]});
 
 	requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
-	boolean found = false;
-	for (int i = 0; i < requests.received.length; i++)
+	var found = false;
+	for (var i = 0; i < requests.received.length; i++)
 	{
 		if (requests.received[i] == pFriendID)
 		{
