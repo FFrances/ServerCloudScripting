@@ -144,7 +144,7 @@ function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 	if (!("friendRequests" in friendRequests.Data) || !(friendRequests.Data["friendRequests"].Value))
 		return false;
 	
-	requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
+	var requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
 	for (var i = 0; i < requests.received.length; i++)
 	{
 		if (requests.received[i] == pPlayerIdToCheck)
@@ -185,7 +185,7 @@ function removeFriendFromRequests(pPlayerID, pFriendID)
 		PlayFabId : pPlayerID,
 		Keys : ["friendRequests"]});
 
-	requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
+	var requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
 	var found = false;
 	for (var i = 0; i < requests.received.length; i++)
 	{
