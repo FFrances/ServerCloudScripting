@@ -165,6 +165,8 @@ function addFriendToRequest(pFriendID, pPlayerID)
 	else
 		requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
 	
+	if (requests.received.indexOf(pPlayerID) >= 0)
+		return;
 	requests.received.push(pPlayerID);
 	
 	var updateResult = server.UpdateUserReadOnlyData(
