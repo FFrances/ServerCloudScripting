@@ -182,7 +182,7 @@ function addFriendToRequest(pFriendID, pPlayerID)
 function removeFriendFromRequests(pPlayerID, pFriendID)
 {
 	var friendRequests = server.GetUserReadOnlyData({
-		PlayFabId : pPlayerId,
+		PlayFabId : pPlayerID,
 		Keys : ["friendRequests"]});
 
 	requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
