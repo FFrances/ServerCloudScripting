@@ -112,6 +112,8 @@ handlers.getFriendsStatistics = function(args)
 				"Rank"
 			]
 		});
+		var info = server.GetUserAccountInfo({PlayFabId : playfabID[i]});
+		playerStatistics["TitleDisplayName"] = info.UserInfo.TitleInfo.DisplayName;
 	}
 	return {playerStatistics};
 }
