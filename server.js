@@ -116,6 +116,30 @@ handlers.getFriendsStatistics = function(args)
 	return {playerStatistics};
 }
 
+handlers.removeFriend = function(args)
+{
+	var friendId = args.FriendPlayFabId;
+	var succeed = true;
+	
+	try {
+		server.RemoveFriend({PlayFabId : currentPlayerId, FriendPlayFabId : friendId});
+	}
+	catch (err) {
+		succeed = false;
+	}
+	
+	return {hasBeenRemoved:succeed};
+}
+
+handlers.removeFriendRequest = function(args)
+{
+	var friendId = args.FriendPlayFabId;
+	
+	var result = removeFriendFromRequests(currentPlayerId, friendId);
+	
+	return {hasBeenRemoved:result};
+}
+
 handlers.addFriend = function(args)
 {
 	var playfabIDSender = currentPlayerId;
@@ -206,6 +230,7 @@ function removeFriendFromRequests(pPlayerID, pFriendID)
 			Permission:"Public"
 		});
 	}
+	return found;
 }
 
 handlers.addCityBuilding =function(args)
