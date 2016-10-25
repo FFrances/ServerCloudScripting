@@ -123,6 +123,7 @@ handlers.removeFriend = function(args)
 	
 	try {
 		server.RemoveFriend({PlayFabId : currentPlayerId, FriendPlayFabId : friendId});
+		server.RemoveFriend({PlayFabId : friendId, FriendPlayFabId : currentPlayerId});
 	}
 	catch (err) {
 		succeed = false;
