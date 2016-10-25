@@ -113,7 +113,7 @@ handlers.getFriendsStatistics = function(args)
 			]
 		});
 		var info = server.GetUserAccountInfo({PlayFabId : playfabID[i]});
-		playerStatistics["TitleDisplayName"] = info.UserInfo.TitleInfo.DisplayName;
+		playerStatistics[i]["TitleDisplayName"] = info.UserInfo.TitleInfo.DisplayName;
 	}
 	return {playerStatistics};
 }
