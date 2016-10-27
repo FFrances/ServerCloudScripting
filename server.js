@@ -743,9 +743,9 @@ handlers.RoomEventRaised = function (args) {
 }
 
 handlers.onFightOver = function (args) {
-	rewardPlayer(currentPlayerId, args.hasWon, args.isDefender);
+	rewardPlayer(currentPlayerId, args.hasWon, args.isDefender, args.previousPlayerRank);
 	if(args.opponentID != "")
-		rewardPlayer(args.opponentID, !args.hasWon, !args.isDefender);
+		rewardPlayer(args.opponentID, !args.hasWon, !args.isDefender, args.previousOpponentRank);
 	return 0;
 }
 
@@ -760,7 +760,7 @@ function getFightStat(playerId, stats)
 	return playerStats;
 }
 
-function rewardPlayer(playerId, hasWon, isDefending)
+function rewardPlayer(playerId, hasWon, isDefending, previousRank)
 {
 	var stats = [
 			"score",
@@ -819,7 +819,7 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		winStreak+=1;
 		defeatStreak=0;
 		score+= 1000;
-		rank += rank>11?2:1; //cost was paid at the start of the fight if rank was > 11
+		rank += previousRank>11?2:1; //cost was paid at the start of the fight if rank was > 11
 		if(winStreak >=5)
 			score += 250;
 	}
