@@ -151,8 +151,13 @@ handlers.addFriend = function(args)
 	var friendshipAccepted = false;
 	if (checkIfPlayerRequestedFriendship(playfabIDSender, playfabIDReceiver) == true)
 	{
+		try {
 		server.AddFriend({PlayFabId : playfabIDSender, FriendPlayFabId : playfabIDReceiver});
+		} catch(e) {}
+		try {
 		server.AddFriend({PlayFabId : playfabIDReceiver, FriendPlayFabId : playfabIDSender});
+		} catch(e) {}
+		
 		removeFriendFromRequests(playfabIDSender, playfabIDReceiver);
 		friendshipAccepted = true;
 	}
@@ -814,7 +819,7 @@ function rewardPlayer(playerId, hasWon, isDefending)
 		winStreak+=1;
 		defeatStreak=0;
 		score+= 1000;
-		rank += rank>=11?2:1; //cost was paid at the start of the fight if rank was >= 12
+		rank += rank>11?2:1; //cost was paid at the start of the fight if rank was > 11
 		if(winStreak >=5)
 			score += 250;
 	}
