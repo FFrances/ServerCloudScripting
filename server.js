@@ -83,22 +83,6 @@ handlers.getRank = function(args)
 	return {rank: playerStats.Statistics[0].Value};
 }
 
-handlers.getLeaderBoardStatistics = function(args)
-{
-	var playfabID = args.PlayFabId.split(",");
-	var playerStatistics = [];
-	for (var i = 0; i < playfabID.length ; i++)
-	{
-		playerStatistics[i] = server.GetPlayerStatistics({
-		PlayFabId: playfabID[i],
-		  StatisticNames: [
-    			"score",
-    			"Xp"]
-		});
-	}
-	return {playerStatistics};
-}
-
 handlers.getFriendsStatistics = function(args)
 {
 	var playfabID = args.PlayFabId.split(",");
