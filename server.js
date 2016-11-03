@@ -729,15 +729,15 @@ handlers.RoomEventRaised = function (args) {
 }
 
 handlers.onFightOver = function (args) {
-	rewardPlayer(currentPlayerId, args.hasWon, args.isDefender, args.previousPlayerRank);
-	if(args.opponentID != "")
-		rewardPlayer(args.opponentID, !args.hasWon, !args.isDefender, args.previousOpponentRank);
-	return 0;
+	if(args.opponentID == "")
+		return 0;
+	rewardPlayer(currentPlayerId, args.hasWon, args.isDefender);
+	rewardPlayer(args.opponentID, !args.hasWon, !args.isDefender);
+	return 1;
 }
 
 function getFightStat(playerId, stats)
 {
-
 	var playerStats = server.GetPlayerStatistics({
 		PlayFabId: playerId,
 		StatisticNames: stats
@@ -746,7 +746,7 @@ function getFightStat(playerId, stats)
 	return playerStats;
 }
 
-function rewardPlayer(playerId, hasWon, isDefending, previousRank)
+function rewardPlayer(playerId, hasWon, isDefending)
 {
 	var stats = [
 			"score",
@@ -804,8 +804,8 @@ function rewardPlayer(playerId, hasWon, isDefending, previousRank)
 		totalWin+=1;
 		winStreak+=1;
 		defeatStreak=0;
+		rank += 1; //cost was paid at the start of the fight if rank was > 11
 		score+= 1000;
-		rank += previousRank>11?2:1; //cost was paid at the start of the fight if rank was > 11
 		if(winStreak >=5)
 			score += 250;
 	}
@@ -814,7 +814,7 @@ function rewardPlayer(playerId, hasWon, isDefending, previousRank)
 		winStreak=0;
 		defeatStreak+=1;
 		score += -250;
-		//Rank cost was paid at the start of the fight if rank was >= 12
+		rank -= rank>10?1:0;
 		if(defeatStreak >=5)
 			score += -250;
 		if(score < 0 )
