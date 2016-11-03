@@ -53,9 +53,7 @@ handlers.startNewGame = function(args)
 		PlayFabId: currentPlayerId,
         Data: {
 			"name":"$no_name",
-			"missile_data":"",
-			"MissionStatus":"1_A@0?1|0?0|0?0,2_A@0?1|0?0|0?0,3_A@0?1|0?0|0?0,4_A@0?1|0?0|0?0,5_A@0?1|0?0|0?0,7_A@0?1|0?0|0?0,8_A@0?1|0?0|0?0,9_A@0?1|0?0|0?0,11_A@0?1|0?0|0?0,12_A@0?1|0?0|0?0,13_A@0?1|0?0|0?0,14_A@0?1|0?0|0?0,15_A@0?1|0?0|0?0,16_A@0?1|0?0|0?0,17_A@0?1|0?0|0?0,18_A@0?1|0?0|0?0,19_A@0?1|0?0|0?0,20_A@0?1|0?0|0?0,21_A@0?1|0?0|0?0,1_Q@0?1,12_Q@0?1",
-			"MissionUpdate":"736270,0"
+			"missile_data":""
         },
 		Permission:"Public"
 	});
@@ -81,7 +79,7 @@ handlers.getRank = function(args)
 		PlayFabId: playerId,
 		StatisticNames: stats
 		});
-
+		
 	return {rank: playerStats.Statistics[0].Value};
 }
 
@@ -108,7 +106,7 @@ handlers.removeFriend = function(args)
 {
 	var friendId = args.FriendPlayFabId;
 	var succeed = true;
-
+	
 	try {
 		server.RemoveFriend({PlayFabId : currentPlayerId, FriendPlayFabId : friendId});
 		server.RemoveFriend({PlayFabId : friendId, FriendPlayFabId : currentPlayerId});
@@ -116,16 +114,16 @@ handlers.removeFriend = function(args)
 	catch (err) {
 		succeed = false;
 	}
-
+	
 	return {hasBeenRemoved:succeed};
 }
 
 handlers.removeFriendRequest = function(args)
 {
 	var friendId = args.FriendPlayFabId;
-
+	
 	var result = removeFriendFromRequests(currentPlayerId, friendId);
-
+	
 	return {hasBeenRemoved:result};
 }
 
@@ -133,7 +131,7 @@ handlers.addFriend = function(args)
 {
 	var playfabIDSender = currentPlayerId;
 	var playfabIDReceiver = args.FriendPlayFabId;
-
+	
 	var friendshipAccepted = false;
 	if (checkIfPlayerRequestedFriendship(playfabIDSender, playfabIDReceiver) == true)
 	{
@@ -143,7 +141,7 @@ handlers.addFriend = function(args)
 		try {
 		server.AddFriend({PlayFabId : playfabIDReceiver, FriendPlayFabId : playfabIDSender});
 		} catch(e) {}
-
+		
 		removeFriendFromRequests(playfabIDSender, playfabIDReceiver);
 		friendshipAccepted = true;
 	}
@@ -158,10 +156,10 @@ function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 	var friendRequests = server.GetUserReadOnlyData({
 		PlayFabId : pPlayerId,
 		Keys : ["friendRequests"]});
-
+		
 	if (!("friendRequests" in friendRequests.Data) || !(friendRequests.Data["friendRequests"].Value))
 		return false;
-
+	
 	var requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
 	for (var i = 0; i < requests.received.length; i++)
 	{
@@ -176,17 +174,17 @@ function addFriendToRequest(pFriendID, pPlayerID)
 	var friendRequests = server.GetUserReadOnlyData({
 		PlayFabId : pFriendID,
 		Keys : ["friendRequests"]});
-
+		
 	var requests;
 	if (friendRequests.Data["friendRequests"] == undefined)
 		requests = {received: new Array()};
 	else
 		requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
-
+	
 	if (requests.received.indexOf(pPlayerID) >= 0)
 		return;
 	requests.received.push(pPlayerID);
-
+	
 	var updateResult = server.UpdateUserReadOnlyData(
 	{
 		PlayFabId: pFriendID,
@@ -615,7 +613,7 @@ handlers.UpdateUserMultipleData =function(args)
 		PlayFabId: currentPlayerId,
 		Statistics: PlayerStatsCalls.UserStatistics
 	});
-
+	
 	// Update UserData
 	var UserDataCalls = args.UserDataCalls;
 	if (Object.keys(UserDataCalls).length > 0)
@@ -626,7 +624,7 @@ handlers.UpdateUserMultipleData =function(args)
 			Permission: "Public"
 		});
 	}
-
+	
 	// Update Currencies
 	var CurrencyChange = args.CurrencyChange;
 	if (Object.keys(CurrencyChange).length > 0)
@@ -654,13 +652,13 @@ handlers.UpdateUserMultipleData =function(args)
 			}
 		}
 	}
-
+	
 	// Update UserReadOnlyData
 	var UserReadOnlyDataCalls = args.UserReadOnlyDataCalls;
 	if (Object.keys(UserReadOnlyDataCalls).length > 0)
 	{
 		for (var key in UserReadOnlyDataCalls) {
-
+			
 			if (key == "moveEntity" )
 			{
 				for (var paramKey in UserReadOnlyDataCalls[key]) {
@@ -676,9 +674,9 @@ handlers.UpdateUserMultipleData =function(args)
 				}
 			}
 		}
-
+		
 	}
-
+	
 	return result;
 }
 
@@ -737,12 +735,12 @@ handlers.onFightOver = function (args) {
 
 function getFightStat(playerId, stats)
 {
-
+	
 	var playerStats = server.GetPlayerStatistics({
 		PlayFabId: playerId,
 		StatisticNames: stats
 		});
-
+		
 	return playerStats;
 }
 
@@ -757,7 +755,7 @@ function rewardPlayer(playerId, hasWon, isDefending, previousRank)
 			"Rank",
 			"best_rank"
 		  ];
-
+	
 	var playerStats = getFightStat(playerId, stats);
 	var score = 0;
 	var winStreak =0; //playerStats.Statistics["win_streak"];
@@ -820,7 +818,7 @@ function rewardPlayer(playerId, hasWon, isDefending, previousRank)
 		if(score < 0 )
 			score = 0;
 	}
-
+	
 	if(bestRank < rank)
 		bestRank = rank;
 
@@ -853,7 +851,7 @@ function rewardPlayer(playerId, hasWon, isDefending, previousRank)
 		  StatisticName: "best_rank",
 		  Value: bestRank
 		}
-
+		
 	];
 
 	server.UpdatePlayerStatistics(
