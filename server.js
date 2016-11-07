@@ -225,6 +225,16 @@ function removeFriendFromRequests(pPlayerID, pFriendID)
 	return found;
 }
 
+handlers.SendPushNotification = function(args)
+{
+	var request = {};
+	request.Recipient = args.Recipient;
+	request.Message = args.Msg;
+	request.Subject = args.Subject;
+	
+	server.SendPushNotification(request);
+}
+
 handlers.addCityBuilding =function(args)
 {
 	var entity = args;
