@@ -204,6 +204,12 @@ function addFriendToRequest(pFriendID, pPlayerID)
 {
 	var requests = getFieldFromNotifications(pFriendID, "requests");
 
+	for (var i = 0; i < requests.length; i++)
+	{
+		if (requests[i].type == "friendship" && requests[i].args.PlayFabID == pPlayerID) // User already in friend request list
+			return;
+	}
+	
 	requests.push({
 		type : "friendship",
 		args : {"PlayFabID" : pPlayerID}
