@@ -190,11 +190,11 @@ handlers.addFriend = function(args)
 
 function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 {
-	var friendRequests = getFieldFromNotifications(pPlayerId, "friendRequests");
+	var requests = getFieldFromNotifications(pPlayerId, "requests");
 	
-	for (var i = 0; i < friendRequests.length; i++)
+	for (var i = 0; i < requests.length; i++)
 	{
-		if (friendRequests[i] == pPlayerIdToCheck)
+		if (requests[i].type == "friendship" && requests[i].args.PlayFabID == pPlayerIdToCheck)
 			return true;
 	}
 	return false;
@@ -202,32 +202,33 @@ function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 
 function addFriendToRequest(pFriendID, pPlayerID)
 {
-	var friendRequests = getFieldFromNotifications(pFriendID, "friendRequests");
+	var requests = getFieldFromNotifications(pFriendID, "requests");
 
-	if (friendRequests.indexOf(pPlayerID) >= 0) // If already in friend requests
-		return;
-	friendRequests.push(pPlayerID);
+	requests.push({
+		type : "friendship",
+		args : {"PlayFabID" : pPlayerID}
+	});
 
-	updateFieldInNotifications(pFriendID, "friendRequests", friendRequests);
+	updateFieldInNotifications(pFriendID, "requests", requests);
 }
 
 function removeFriendFromRequests(pPlayerID, pFriendID)
 {
-	var friendRequests = getFieldFromNotifications(pPlayerID, "friendRequests");
+	var requests = getFieldFromNotifications(pPlayerID, "requests");
 
 	var found = false;
-	for (var i = 0; i < friendRequests.length; i++)
+	for (var i = 0; i < requests.length; i++)
 	{
-		if (friendRequests[i] == pFriendID)
+		if (requests[i].type == "friendship" && requests[i].args.PlayFabID == pFriendID)
 		{
-			friendRequests.splice(i, 1);
+			requests.splice(i, 1);
 			found = true;
 			break;
 		}
 	}
 	if (found === true)
 	{
-		updateFieldInNotifications(pPlayerID, "friendRequests", friendRequests);
+		updateFieldInNotifications(pPlayerID, "requests", requests);
 	}
 	return found;
 }
