@@ -85,10 +85,10 @@ function getFieldFromNotifications(pPlayFabId, pFieldName)
 	
 	var fields = JSON.parse(notifications.Data.Notifications.Value);
 	
-	if (!(pFieldName in fields.Data) || !(fields.Data[pFieldName].Value))
+	if (!(fields.hasOwnProperty(pFieldName))
 		return [];
 	
-	return JSON.parse(fields.Data[pFieldName].Value);
+	return fields[pFieldName];
 }
 
 // Update the corresponding array into Notifications PlayerData
