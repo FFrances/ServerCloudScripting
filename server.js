@@ -202,7 +202,7 @@ function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 
 function addFriendToRequest(pFriendID, pPlayerID)
 {
-	var friendRequests = getFieldFromNotifications("friendRequests");
+	var friendRequests = getFieldFromNotifications(pFriendID, "friendRequests");
 
 	if (friendRequests.indexOf(pPlayerID) >= 0) // If already in friend requests
 		return;
