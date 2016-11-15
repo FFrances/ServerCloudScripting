@@ -14,7 +14,7 @@ handlers.helloWorld = function (args) {
     // in the "ActionLog" field of the RunCloudScript result, so you can use them to assist in
     // debugging and error handling.
     return { messageValue: message, timestamp: now };
-}
+};
 
 function getPlayerDataForMap(mapKey)
 {
@@ -66,23 +66,60 @@ handlers.startNewGame = function(args)
         },
 		Permission:"Private"
 	});
-}
+};
 
-handlers.getRank = function(args)
+/*
+** Notifications functions
+*/
+
+// Return the array corresponding to the field described by pFieldName from the Notifications PlayerData
+function getFieldFromNotifications(pPlayFabId, pFieldName)
 {
-	var playfabID = args.playerID;
-	var stats = [
-			"Rank"
-		  ];
-
-	var playerStats = server.GetPlayerStatistics({
-		PlayFabId: playerId,
-		StatisticNames: stats
-		});
-
-	return {rank: playerStats.Statistics[0].Value};
+	var notifications = server.GetUserReadOnlyData({
+		PlayFabId : pPlayFabId,
+		Keys : ["Notifications"]
+	});
+	
+	if (!("Notifications" in notifications.Data) || !(notifications.Data.Notifications.Value))
+		return [];
+	
+	var fields = JSON.parse(notifications.Data.Notifications.Value);
+	
+	if (!(pFieldName in fields.Data) || !(fields.Data[pFieldName].Value))
+		return [];
+	
+	return JSON.parse(fields.Data[pFieldName].Value);
 }
 
+// Update the corresponding array into Notifications PlayerData
+// Create Notifications in player data if didn't exist
+function updateFieldInNotifications(pPlayFabId, pFieldName, pValue)
+{
+	var request = server.GetUserReadOnlyData({
+		PlayFabId : pPlayFabId,
+		Keys : ["Notifications"]
+	});
+	var notifications;
+	
+	if (!("Notifications" in request.Data) || !(request.Data.Notifications.Value)) // Notifications doesn't exist
+		notifications = {};
+	else
+		notifications = JSON.parse(request.Data.Notifications.Value);
+	
+	notifications[pFieldName] = pValue;
+	server.UpdateUserReadOnlyData(
+	{
+		PlayFabId: pPlayFabId,
+        Data: {
+            "Notifications": JSON.stringify(notifications)
+        },
+		Permission:"Public"
+	});
+}
+
+/*
+** Friends functions
+*/
 handlers.getFriendsStatistics = function(args)
 {
 	var playfabID = args.PlayFabId.split(",");
@@ -100,7 +137,7 @@ handlers.getFriendsStatistics = function(args)
 		playerStatistics[i]["TitleDisplayName"] = info.UserInfo.TitleInfo.DisplayName;
 	}
 	return {playerStatistics};
-}
+};
 
 handlers.removeFriend = function(args)
 {
@@ -116,7 +153,7 @@ handlers.removeFriend = function(args)
 	}
 
 	return {hasBeenRemoved:succeed};
-}
+};
 
 handlers.removeFriendRequest = function(args)
 {
@@ -125,7 +162,7 @@ handlers.removeFriendRequest = function(args)
 	var result = removeFriendFromRequests(currentPlayerId, friendId);
 
 	return {hasBeenRemoved:result};
-}
+};
 
 handlers.addFriend = function(args)
 {
@@ -133,7 +170,7 @@ handlers.addFriend = function(args)
 	var playfabIDReceiver = args.FriendPlayFabId;
 
 	var friendshipAccepted = false;
-	if (checkIfPlayerRequestedFriendship(playfabIDSender, playfabIDReceiver) == true)
+	if (checkIfPlayerRequestedFriendship(playfabIDSender, playfabIDReceiver) === true)
 	{
 		try {
 		server.AddFriend({PlayFabId : playfabIDSender, FriendPlayFabId : playfabIDReceiver});
@@ -149,21 +186,15 @@ handlers.addFriend = function(args)
 		addFriendToRequest(playfabIDReceiver, playfabIDSender);
 	}
 	return {isNowFriend:friendshipAccepted};
-}
+};
 
 function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 {
-	var friendRequests = server.GetUserReadOnlyData({
-		PlayFabId : pPlayerId,
-		Keys : ["friendRequests"]});
-
-	if (!("friendRequests" in friendRequests.Data) || !(friendRequests.Data["friendRequests"].Value))
-		return false;
-
-	var requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
-	for (var i = 0; i < requests.received.length; i++)
+	var friendRequests = getFieldFromNotifications(pPlayerId, "friendRequests");
+	
+	for (var i = 0; i < friendRequests.length; i++)
 	{
-		if (requests.received[i] == pPlayerIdToCheck)
+		if (friendRequests[i] == pPlayerIdToCheck)
 			return true;
 	}
 	return false;
@@ -171,56 +202,32 @@ function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 
 function addFriendToRequest(pFriendID, pPlayerID)
 {
-	var friendRequests = server.GetUserReadOnlyData({
-		PlayFabId : pFriendID,
-		Keys : ["friendRequests"]});
+	var friendRequests = getFieldFromNotifications("friendRequests");
 
-	var requests;
-	if (friendRequests.Data["friendRequests"] == undefined)
-		requests = {received: new Array()};
-	else
-		requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
-
-	if (requests.received.indexOf(pPlayerID) >= 0)
+	if (friendRequests.indexOf(pPlayerID) >= 0) // If already in friend requests
 		return;
-	requests.received.push(pPlayerID);
+	friendRequests.push(pPlayerID);
 
-	var updateResult = server.UpdateUserReadOnlyData(
-	{
-		PlayFabId: pFriendID,
-        Data: {
-            "friendRequests": JSON.stringify(requests)
-        },
-		Permission:"Public"
-	})
+	updateFieldInNotifications(pFriendID, "friendRequests", friendRequests);
 }
 
 function removeFriendFromRequests(pPlayerID, pFriendID)
 {
-	var friendRequests = server.GetUserReadOnlyData({
-		PlayFabId : pPlayerID,
-		Keys : ["friendRequests"]});
+	var friendRequests = getFieldFromNotifications(pPlayerID, "friendRequests");
 
-	var requests = JSON.parse(friendRequests.Data["friendRequests"].Value);
 	var found = false;
-	for (var i = 0; i < requests.received.length; i++)
+	for (var i = 0; i < friendRequests.length; i++)
 	{
-		if (requests.received[i] == pFriendID)
+		if (friendRequests[i] == pFriendID)
 		{
-			requests.received.splice(i, 1);
+			friendRequests.splice(i, 1);
 			found = true;
 			break;
 		}
 	}
-	if (found == true)
+	if (found === true)
 	{
-		var updateUserDataResult = server.UpdateUserReadOnlyData({
-			PlayFabId: pPlayerID,
-			Data: {
-			    "friendRequests": JSON.stringify(requests)
-			},
-			Permission:"Public"
-		});
+		updateFieldInNotifications(pPlayerID, "friendRequests", friendRequests);
 	}
 	return found;
 }
@@ -233,15 +240,15 @@ handlers.SendPushNotification = function(args)
 	request.Subject = args.Subject;
 	
 	server.SendPushNotification(request);
-}
+};
 
-handlers.addCityBuilding =function(args)
+handlers.addCityBuilding = function(args)
 {
 	var entity = args;
-	var playerData = getPlayerDataForMap("cityMap")
+	var playerData = getPlayerDataForMap("cityMap");
 
 	var playerDataCityMap;
-	if(playerData.Data["cityMap"] == undefined)
+	if(playerData.Data["cityMap"] === undefined)
 		playerDataCityMap = createEmptyMap();
 	else
 		playerDataCityMap = JSON.parse(playerData.Data["cityMap"].Value);
@@ -251,7 +258,7 @@ handlers.addCityBuilding =function(args)
 	var nextID = parseInt(playerData.Data["nextID"].Value);
 	nextID++;
 
-	var updateUserDataResult = server.UpdateUserReadOnlyData({
+	server.UpdateUserReadOnlyData({
         PlayFabId: currentPlayerId,
         Data: {
             "cityMap": JSON.stringify(playerDataCityMap),
@@ -260,12 +267,12 @@ handlers.addCityBuilding =function(args)
 		Permission:"Public"
     });
 	return {idcheck:nextID};
-}
+};
 
 handlers.removeCityBuilding =function(args)
 {
 	var entityID = args;
-	var playerData = getPlayerDataForMap("cityMap")
+	var playerData = getPlayerDataForMap("cityMap");
 
 	var playerDataMap = JSON.parse(playerData.Data["cityMap"].Value);
 
@@ -281,7 +288,7 @@ handlers.removeCityBuilding =function(args)
 	}
 	if(found)
 	{
-		var updateUserDataResult = server.UpdateUserReadOnlyData({
+		server.UpdateUserReadOnlyData({
 			PlayFabId: currentPlayerId,
 			Data: {
 			    "cityMap": JSON.stringify(playerDataMap)
@@ -291,14 +298,15 @@ handlers.removeCityBuilding =function(args)
 	}
 
 	return {hasBeenRemoved:found};
-}
+};
+
 handlers.addDefBuilding =function(args)
 {
 	var entity = args;
-	var playerData = getPlayerDataForMap("defMap")
+	var playerData = getPlayerDataForMap("defMap");
 
 	var playerDataCityMap;
-	if(playerData.Data["defMap"] == undefined)
+	if(playerData.Data["defMap"] === undefined)
 		playerDataCityMap = createEmptyMap();
 	else
 		playerDataCityMap = JSON.parse(playerData.Data["defMap"].Value);
@@ -308,7 +316,7 @@ handlers.addDefBuilding =function(args)
 	var nextID = parseInt(playerData.Data["nextID"].Value);
 	nextID++;
 
-	var updateUserDataResult = server.UpdateUserReadOnlyData({
+	server.UpdateUserReadOnlyData({
         PlayFabId: currentPlayerId,
         Data: {
             "defMap": JSON.stringify(playerDataCityMap),
@@ -317,11 +325,12 @@ handlers.addDefBuilding =function(args)
 		Permission:"Public"
     });
 	return {idcheck:nextID};
-}
+};
+
 handlers.removeDefBuilding =function(args)
 {
 	var entityID = args;
-	var playerData = getPlayerDataForMap("defMap")
+	var playerData = getPlayerDataForMap("defMap");
 
 	var playerDataMap = JSON.parse(playerData.Data["defMap"].Value);
 
@@ -337,7 +346,7 @@ handlers.removeDefBuilding =function(args)
 	}
 	if(found)
 	{
-		var updateUserDataResult = server.UpdateUserReadOnlyData({
+		server.UpdateUserReadOnlyData({
 			PlayFabId: currentPlayerId,
 			Data: {
 			    "defMap": JSON.stringify(playerDataMap)
@@ -347,14 +356,15 @@ handlers.removeDefBuilding =function(args)
 	}
 
 	return {hasBeenRemoved:found};
-}
+};
+
 handlers.addWhaleBuilding =function(args)
 {
 	var entity = args;
-	var playerData = getPlayerDataForMap("whaleMap")
+	var playerData = getPlayerDataForMap("whaleMap");
 
 	var playerDataCityMap;
-	if(playerData.Data["whaleMap"] == undefined)
+	if(playerData.Data["whaleMap"] === undefined)
 		playerDataCityMap = createEmptyMap();
 	else
 		playerDataCityMap = JSON.parse(playerData.Data["whaleMap"].Value);
@@ -364,7 +374,7 @@ handlers.addWhaleBuilding =function(args)
 	var nextID = parseInt(playerData.Data["nextID"].Value);
 	nextID++;
 
-	var updateUserDataResult = server.UpdateUserReadOnlyData({
+	server.UpdateUserReadOnlyData({
         PlayFabId: currentPlayerId,
         Data: {
             "whaleMap": JSON.stringify(playerDataCityMap),
@@ -373,11 +383,12 @@ handlers.addWhaleBuilding =function(args)
 		Permission:"Public"
     });
 	return {idcheck:nextID};
-}
+};
+
 handlers.removeWhaleBuilding =function(args)
 {
 	var entityID = args;
-	var playerData = getPlayerDataForMap("whaleMap")
+	var playerData = getPlayerDataForMap("whaleMap");
 
 	var playerDataMap = JSON.parse(playerData.Data["whaleMap"].Value);
 
@@ -393,7 +404,7 @@ handlers.removeWhaleBuilding =function(args)
 	}
 	if(found)
 	{
-		var updateUserDataResult = server.UpdateUserReadOnlyData({
+		server.UpdateUserReadOnlyData({
 			PlayFabId: currentPlayerId,
 			Data: {
 			    "whaleMap": JSON.stringify(playerDataMap)
@@ -403,14 +414,15 @@ handlers.removeWhaleBuilding =function(args)
 	}
 
 	return {hasBeenRemoved:found};
-}
+};
+
 handlers.addMineBuilding =function(args)
 {
 	var entity = args;
-	var playerData = getPlayerDataForMap("mineMap")
+	var playerData = getPlayerDataForMap("mineMap");
 
 	var playerDataCityMap;
-	if(playerData.Data["mineMap"] == undefined)
+	if(playerData.Data["mineMap"] === undefined)
 		playerDataCityMap = createEmptyMap();
 	else
 		playerDataCityMap = JSON.parse(playerData.Data["mineMap"].Value);
@@ -420,7 +432,7 @@ handlers.addMineBuilding =function(args)
 	var nextID = parseInt(playerData.Data["nextID"].Value);
 	nextID++;
 
-	var updateUserDataResult = server.UpdateUserReadOnlyData({
+	server.UpdateUserReadOnlyData({
         PlayFabId: currentPlayerId,
         Data: {
             "mineMap": JSON.stringify(playerDataCityMap),
@@ -429,11 +441,12 @@ handlers.addMineBuilding =function(args)
 		Permission:"Public"
     });
 	return {idcheck:nextID};
-}
+};
+
 handlers.removeMineBuilding =function(args)
 {
 	var entityID = args;
-	var playerData = getPlayerDataForMap("mineMap")
+	var playerData = getPlayerDataForMap("mineMap");
 
 	var playerDataMap = JSON.parse(playerData.Data["mineMap"].Value);
 
@@ -449,7 +462,7 @@ handlers.removeMineBuilding =function(args)
 	}
 	if(found)
 	{
-		var updateUserDataResult = server.UpdateUserReadOnlyData({
+		server.UpdateUserReadOnlyData({
 			PlayFabId: currentPlayerId,
 			Data: {
 			    "mineMap": JSON.stringify(playerDataMap)
@@ -459,14 +472,15 @@ handlers.removeMineBuilding =function(args)
 	}
 
 	return {hasBeenRemoved:found};
-}
+};
+
 handlers.addMantaBuilding = function (args)
 {
     var entity = args;
-    var playerData = getPlayerDataForMap("mantaMap")
+    var playerData = getPlayerDataForMap("mantaMap");
 
     var playerDataCityMap;
-    if (playerData.Data["mantaMap"] == undefined)
+    if (playerData.Data["mantaMap"] === undefined)
         playerDataCityMap = createEmptyMap();
     else
         playerDataCityMap = JSON.parse(playerData.Data["mantaMap"].Value);
@@ -476,7 +490,7 @@ handlers.addMantaBuilding = function (args)
     var nextID = parseInt(playerData.Data["nextID"].Value);
     nextID++;
 
-    var updateUserDataResult = server.UpdateUserReadOnlyData({
+    server.UpdateUserReadOnlyData({
         PlayFabId: currentPlayerId,
         Data: {
             "mantaMap": JSON.stringify(playerDataCityMap),
@@ -486,10 +500,11 @@ handlers.addMantaBuilding = function (args)
     });
     return { idcheck: nextID };
 };
+
 handlers.removeMantaBuilding = function (args)
 {
     var entityID = args;
-    var playerData = getPlayerDataForMap("mantaMap")
+    var playerData = getPlayerDataForMap("mantaMap");
 
     var playerDataMap = JSON.parse(playerData.Data["mantaMap"].Value);
 
@@ -502,7 +517,7 @@ handlers.removeMantaBuilding = function (args)
         }
     }
     if (found) {
-        var updateUserDataResult = server.UpdateUserReadOnlyData({
+        server.UpdateUserReadOnlyData({
             PlayFabId: currentPlayerId,
             Data: {
                 "mantaMap": JSON.stringify(playerDataMap)
@@ -513,10 +528,11 @@ handlers.removeMantaBuilding = function (args)
 
     return { hasBeenRemoved: found };
 };
+
 handlers.changeStateEntity = function (args)
 {
 	return changeStateEntity(args);
-}
+};
 
 function changeStateEntity(args)
 {
@@ -550,7 +566,7 @@ function changeStateEntity(args)
 		var value = JSON.stringify(playerDataMap);
 		var data = {};
 		data[mapKey] = value;
-		var updateUserDataResult = server.UpdateUserReadOnlyData({
+		server.UpdateUserReadOnlyData({
 			PlayFabId: currentPlayerId,
 			Data: data,
 			Permission:"Public"
@@ -563,7 +579,7 @@ function changeStateEntity(args)
 handlers.moveEntity = function(args)
 {
 	return moveEntity(args);
-}
+};
 
 function moveEntity(args)
 {
@@ -599,7 +615,7 @@ function moveEntity(args)
 		var value = JSON.stringify(playerDataMap);
 		var data = {};
 		data[mapKey] = value;
-		var updateUserDataResult = server.UpdateUserReadOnlyData({
+		server.UpdateUserReadOnlyData({
 			PlayFabId: currentPlayerId,
 			Data: data,
 			Permission:"Public"
@@ -628,7 +644,7 @@ handlers.UpdateUserMultipleData =function(args)
 	var UserDataCalls = args.UserDataCalls;
 	if (Object.keys(UserDataCalls).length > 0)
 	{
-		var result = server.UpdateUserData({
+		result = server.UpdateUserData({
 			PlayFabId: currentPlayerId,
 			Data : UserDataCalls,
 			Permission: "Public"
@@ -645,7 +661,7 @@ handlers.UpdateUserMultipleData =function(args)
 			// value = value to change
 			if(value > 0)
 			{
-				var result = server.AddUserVirtualCurrency({
+				result = server.AddUserVirtualCurrency({
 					PlayFabId: currentPlayerId,
 					VirtualCurrency: key,
 					Amount: value
@@ -654,7 +670,7 @@ handlers.UpdateUserMultipleData =function(args)
 			else if (value < 0)
 			{
 				value *= -1;
-				var result = server.SubtractUserVirtualCurrency({
+				result = server.SubtractUserVirtualCurrency({
 					PlayFabId: currentPlayerId,
 					VirtualCurrency: key,
 					Amount: value
@@ -672,15 +688,15 @@ handlers.UpdateUserMultipleData =function(args)
 			if (key == "moveEntity" )
 			{
 				for (var paramKey in UserReadOnlyDataCalls[key]) {
-					var paramValue = UserReadOnlyDataCalls[key][paramKey]
-					var result = moveEntity(paramValue);
+					var paramValue = UserReadOnlyDataCalls[key][paramKey];
+					result = moveEntity(paramValue);
 				}
 			}
 			if (key == "changeStateEntity" )
 			{
 				for (var paramKey in UserReadOnlyDataCalls[key]) {
-					var paramValue = UserReadOnlyDataCalls[key][paramKey]
-					var result = changeStateEntity(paramValue);
+					var paramValue = UserReadOnlyDataCalls[key][paramKey];
+					result = changeStateEntity(paramValue);
 				}
 			}
 		}
@@ -688,7 +704,7 @@ handlers.UpdateUserMultipleData =function(args)
 	}
 
 	return result;
-}
+};
 
 
 // Photon Webhooks Integration
@@ -704,29 +720,29 @@ handlers.UpdateUserMultipleData =function(args)
 // Triggered automatically when a Photon room is first created
 handlers.RoomCreated = function (args) {
     log.debug("Room Created - Game: " + args.GameId + " MaxPlayers: " + args.CreateOptions.MaxPlayers);
-}
+};
 
 // Triggered automatically when a player joins a Photon room
 handlers.RoomJoined = function (args) {
     log.debug("Room Joined - Game: " + args.GameId + " PlayFabId: " + args.UserId);
-}
+};
 
 // Triggered automatically when a player leaves a Photon room
 handlers.RoomLeft = function (args) {
     log.debug("Room Left - Game: " + args.GameId + " PlayFabId: " + args.UserId);
-}
+};
 
 // Triggered automatically when a Photon room closes
 // Note: currentPlayerId is undefined in this function
 handlers.RoomClosed = function (args) {
     log.debug("Room Closed - Game: " + args.GameId);
-}
+};
 
 // Triggered automatically when a Photon room game property is updated.
 // Note: currentPlayerId is undefined in this function
 handlers.RoomPropertyUpdated = function (args) {
     log.debug("Room Property Updated - Game: " + args.GameId);
-}
+};
 
 // Triggered by calling "OpRaiseEvent" on the Photon client. The "args.Data" property is
 // set to the value of the "customEventContent" HashTable parameter, so you can use
@@ -734,15 +750,15 @@ handlers.RoomPropertyUpdated = function (args) {
 handlers.RoomEventRaised = function (args) {
     var eventData = args.Data;
     log.debug("Event Raised - Game: " + args.GameId + " Event Type: " + eventData.eventType);
-}
+};
 
 handlers.onFightOver = function (args) {
-	if(args.opponentID == "")
+	if(args.opponentID === "")
 		return 0;
 	rewardPlayer(currentPlayerId, args.hasWon, args.isDefender);
 	rewardPlayer(args.opponentID, !args.hasWon, !args.isDefender);
 	return 1;
-}
+};
 
 function getFightStat(playerId, stats)
 {
