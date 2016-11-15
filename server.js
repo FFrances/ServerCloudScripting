@@ -85,7 +85,7 @@ function getFieldFromNotifications(pPlayFabId, pFieldName)
 	
 	var fields = JSON.parse(notifications.Data.Notifications.Value);
 	
-	if (!(fields.hasOwnProperty(pFieldName))
+	if (!(fields.hasOwnProperty(pFieldName)))
 		return [];
 	
 	return fields[pFieldName];
