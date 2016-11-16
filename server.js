@@ -75,10 +75,17 @@ handlers.startNewGame = function(args)
 // Return the notification stored and clear them on the server
 handlers.getNotifications = function(pArgs)
 {
-	var notifications = server.GetUserReadOnlyData({
+	var request = server.GetUserReadOnlyData({
 		PlayFabId : pPlayFabId,
 		Keys : ["Notifications"]
 	});
+	
+	var notifications;
+	
+	if (!("Notifications" in request.Data) || !(request.Data.Notifications.Value)) // Notifications doesn't exist
+		notifications = {};
+	else
+		notifications = JSON.parse(request.Data.Notifications.Value);
 	
 	server.UpdateUserReadOnlyData(
 	{
