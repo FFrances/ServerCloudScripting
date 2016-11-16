@@ -118,6 +118,44 @@ function updateFieldInNotifications(pPlayFabId, pFieldName, pValue)
 }
 
 /*
+** Fight Request Function
+*/
+
+handlers.sendFightRequest = function(pArgs)
+{
+	var friendID = pArgs.FriendPlayFabID;
+	var msg = pArgs.Message;
+	
+	var requests = getFieldFromNotifications(friendID, "requests");
+	
+	for (var i = 0; i < requests.length; i++)
+	{
+		if (requests[i].type == "fight" && requests[i].args.PlayFabID == friendID)
+			return;
+	}
+	
+	var data = server.GetUserData({
+		PlayFabId: currentPlayerId,
+		Keys: ["name"]
+	});
+	
+	requests.push({
+		type : "fight",
+		args : {"PlayFabID" : currentPlayerId, "Username" : data.Data.name.Value}
+	});
+	
+	updateFieldInNotifications(friendID, "requests", requests);
+	
+	server.SendPushNotification(
+	{
+		Recipient: friendID,
+		Message: msg
+	});
+	
+	return {success:true};
+};
+
+/*
 ** Friends functions
 */
 handlers.getFriendsStatistics = function(args)
@@ -238,16 +276,6 @@ function removeFriendFromRequests(pPlayerID, pFriendID)
 	}
 	return found;
 }
-
-handlers.SendPushNotification = function(args)
-{
-	var request = {};
-	request.Recipient = args.Recipient;
-	request.Message = args.Msg;
-	request.Subject = args.Subject;
-	
-	server.SendPushNotification(request);
-};
 
 handlers.addCityBuilding = function(args)
 {
