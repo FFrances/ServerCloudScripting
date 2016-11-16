@@ -72,6 +72,26 @@ handlers.startNewGame = function(args)
 ** Notifications functions
 */
 
+// Return the notification stored and clear them on the server
+handlers.getNotifications = function(pArgs)
+{
+	var notifications = server.GetUserReadOnlyData({
+		PlayFabId : pPlayFabId,
+		Keys : ["Notifications"]
+	});
+	
+	server.UpdateUserReadOnlyData(
+	{
+		PlayFabId: pPlayFabId,
+        Data: {
+            "Notifications": "{}"
+        },
+		Permission:"Public"
+	});
+	
+	return notifications;
+}
+
 // Return the array corresponding to the field described by pFieldName from the Notifications PlayerData
 function getFieldFromNotifications(pPlayFabId, pFieldName)
 {
@@ -127,22 +147,31 @@ handlers.sendFightRequest = function(pArgs)
 	var msg = pArgs.Message;
 	
 	var requests = getFieldFromNotifications(friendID, "requests");
+	var alreadyRequested = false;
 	
 	for (var i = 0; i < requests.length; i++)
 	{
 		if (requests[i].type == "fight" && requests[i].args.PlayFabID == friendID)
-			return;
+		{
+			requests[i].timestamp = Date.now(); // update the timestamp
+			alreadyRequested = true;
+		}
 	}
 	
-	var data = server.GetUserData({
-		PlayFabId: currentPlayerId,
-		Keys: ["name"]
-	});
+	if (alreadyRequested === false) {
+		var data = server.GetUserData({
+			PlayFabId: currentPlayerId,
+			Keys: ["name"]
+		});
 	
-	requests.push({
-		type : "fight",
-		args : {"PlayFabID" : currentPlayerId, "Username" : data.Data.name.Value}
-	});
+		var now = Date.now();
+		
+		requests.push({
+			type : "fight",
+			args : {"PlayFabID" : currentPlayerId, "Username" : data.Data.name.Value},
+			timestamp : now
+		});
+	}
 	
 	updateFieldInNotifications(friendID, "requests", requests);
 	
