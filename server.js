@@ -76,7 +76,7 @@ handlers.startNewGame = function(args)
 handlers.getNotifications = function(pArgs)
 {
 	var request = server.GetUserReadOnlyData({
-		PlayFabId : pPlayFabId,
+		PlayFabId : currentPlayerId,
 		Keys : ["Notifications"]
 	});
 	
@@ -89,7 +89,7 @@ handlers.getNotifications = function(pArgs)
 	
 	server.UpdateUserReadOnlyData(
 	{
-		PlayFabId: pPlayFabId,
+		PlayFabId: currentPlayerId,
         Data: {
             "Notifications": "{}"
         },
