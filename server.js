@@ -70,6 +70,11 @@ handlers.startNewGame = function(args)
 
 /*
 ** Notifications functions
+** NotificationType {
+	friendship = 1,
+	fight = 2,
+	local = 4
+}
 */
 
 // Return the notification stored and clear them on the server
@@ -174,7 +179,7 @@ handlers.sendFightRequest = function(pArgs)
 		var now = Date.now();
 		
 		requests.push({
-			type : "fight",
+			type : 2, //2 == fight, cf BaseNotificationManager.cs => NotificationType
 			args : {"PlayFabID" : currentPlayerId, "Username" : data.Data.name.Value},
 			timestamp : now
 		});
