@@ -711,14 +711,10 @@ handlers.UpdateUserMultipleData =function(args)
 {
 	// Update Player Stats
 	var PlayerStatsCalls = args.PlayerStatsCalls;
-	var result;
-	if(PlayerStatsCalls.UserStatistics != undefined)
-	{
-		result = server.UpdatePlayerStatistics({
-			PlayFabId: currentPlayerId,
-			Statistics: PlayerStatsCalls.UserStatistics
-		});
-	}
+	var result = server.UpdatePlayerStatistics({
+		PlayFabId: currentPlayerId,
+		Statistics: PlayerStatsCalls.Statistics
+	});
 	// Update UserData
 	var UserDataCalls = args.UserDataCalls;
 	if (Object.keys(UserDataCalls).length > 0)
