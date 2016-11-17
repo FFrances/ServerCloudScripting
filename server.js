@@ -182,13 +182,18 @@ handlers.sendFightRequest = function(pArgs)
 	
 	updateFieldInNotifications(friendID, "requests", requests);
 	
-	server.SendPushNotification(
-	{
-		Recipient: friendID,
-		Message: msg
-	});
+	var error = "";
 	
-	return {success:true};
+	try {	
+		server.SendPushNotification(
+		{
+			Recipient: friendID,
+			Message: msg
+		});
+	} catch (err) {
+		error = err;
+	}
+	return {Success:true,Error:JSON.stringify(error)};
 };
 
 /*
