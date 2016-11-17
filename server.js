@@ -718,9 +718,8 @@ handlers.UpdateUserMultipleData =function(args)
 	var PlayerStatsCalls = args.PlayerStatsCalls;
 	var result = server.UpdatePlayerStatistics({
 		PlayFabId: currentPlayerId,
-		Statistics: PlayerStatsCalls.UserStatistics
+		Statistics: PlayerStatsCalls.Statistics
 	});
-
 	// Update UserData
 	var UserDataCalls = args.UserDataCalls;
 	if (Object.keys(UserDataCalls).length > 0)
