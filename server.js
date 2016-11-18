@@ -47,9 +47,15 @@ handlers.copyUserIntoOtherUser = function(pArgs)
 		PlayFabId: SenderID
 	});
 	
+	var newData = {};
+	for (var propertyName in data.Data)
+	{
+		newData[propertyName] = data.Data[propertyName].Value;
+	}
+	
 	server.UpdateUserData({
 		PlayFabId: ReceiverID,
-		Data: data.Data,
+		Data: newData,
 		Permission: "Public"
 	});
 	
@@ -57,9 +63,15 @@ handlers.copyUserIntoOtherUser = function(pArgs)
 		PlayFabId: SenderID
 	});
 	
+	var newReadOnlyData = {};
+	for (var readOnlyPropertyName in readOnlyData.Data)
+	{
+		newReadOnlyData[readOnlyPropertyName] = readOnlyData.Data[readOnlyPropertyName].Value;
+	}
+	
 	server.UpdateUserReadOnlyData({
 		PlayFabId: ReceiverID,
-		Data: readOnlyData.Data,
+		Data: newReadOnlyData,
 		Permission: "Public"
 	});
 }
