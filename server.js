@@ -26,6 +26,43 @@ function getPlayerDataForMap(mapKey)
 	return playerData;
 }
 
+// Copy all data from a specific user to another
+function copyUserIntoOtherUser(pArgs)
+{
+	var SenderID = pArgs.SenderID;
+	var ReceiverID = pArgs.ReceiverID;
+	
+	var statistics = server.GetPlayerStatistics({
+		PlayFabId: SenderID
+	});
+	
+	server.UpdatePlayerStatistics(
+	{
+		PlayFabId: ReceiverID,
+		Statistics: statistics.data.Statistics,
+		ForceUpdate: true
+	});
+	
+	var data = server.GetUserData({
+		PlayFabId: SenderID
+	});
+	
+	server.UpdateUserData({
+		PlayFabId: ReceiverID,
+		Data: data.data.Data,
+		Permission: "Public"
+	});
+	
+	var readOnlyData = server.GetUserReadOnlyData({
+		PlayFabId: SenderID
+	});
+	
+	server.UpdateUserReadOnlyData({
+		PlayFabId: ReceiverID,
+		Data: readOnlyData.data.Data,
+		Permission: "Public"
+	});
+}
 
 function createEmptyMap()
 {
