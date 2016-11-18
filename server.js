@@ -27,7 +27,7 @@ function getPlayerDataForMap(mapKey)
 }
 
 // Copy all data from a specific user to another
-function copyUserIntoOtherUser(pArgs)
+handlers.copyUserIntoOtherUser = function(pArgs)
 {
 	var SenderID = pArgs.SenderID;
 	var ReceiverID = pArgs.ReceiverID;
