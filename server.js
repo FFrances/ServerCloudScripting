@@ -39,7 +39,7 @@ handlers.copyUserIntoOtherUser = function(pArgs)
 	server.UpdatePlayerStatistics(
 	{
 		PlayFabId: ReceiverID,
-		Statistics: statistics.data.Statistics,
+		Statistics: statistics.Statistics,
 		ForceUpdate: true
 	});
 	
@@ -49,7 +49,7 @@ handlers.copyUserIntoOtherUser = function(pArgs)
 	
 	server.UpdateUserData({
 		PlayFabId: ReceiverID,
-		Data: data.data.Data,
+		Data: data.Data,
 		Permission: "Public"
 	});
 	
@@ -59,7 +59,7 @@ handlers.copyUserIntoOtherUser = function(pArgs)
 	
 	server.UpdateUserReadOnlyData({
 		PlayFabId: ReceiverID,
-		Data: readOnlyData.data.Data,
+		Data: readOnlyData.Data,
 		Permission: "Public"
 	});
 }
