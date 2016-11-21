@@ -135,11 +135,18 @@ handlers.getNotifications = function(pArgs)
 	});
 	
 	var notifications;
+	var notificationsToKeep = {};
 	
 	if (!("Notifications" in request.Data) || !(request.Data.Notifications.Value)) // Notifications doesn't exist
+	{
 		notifications = {};
+	}
 	else
+	{
 		notifications = JSON.parse(request.Data.Notifications.Value);
+		if (notifications.hasOwnProperty("requests"))
+			notificationsToKeep = { requests: notifications.requests.filter(function (req) { return (req.type == 1); } /*friendship*/) };
+	}
 	
 	server.UpdateUserReadOnlyData(
 	{
@@ -151,7 +158,7 @@ handlers.getNotifications = function(pArgs)
 	});
 	
 	return notifications;
-}
+};
 
 // Return the array corresponding to the field described by pFieldName from the Notifications PlayerData
 function getFieldFromNotifications(pPlayFabId, pFieldName)
@@ -212,7 +219,7 @@ handlers.sendFightRequest = function(pArgs)
 	
 	for (var i = 0; i < requests.length; i++)
 	{
-		if (requests[i].type == "fight" && requests[i].args.PlayFabID == friendID)
+		if (requests[i].type == 2 && requests[i].args.PlayFabID == friendID)
 		{
 			requests[i].timestamp = Date.now(); // update the timestamp
 			alreadyRequested = true;
@@ -327,7 +334,7 @@ function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
 	
 	for (var i = 0; i < requests.length; i++)
 	{
-		if (requests[i].type == "friendship" && requests[i].args.PlayFabID == pPlayerIdToCheck)
+		if (requests[i].type == 1 && requests[i].args.PlayFabID == pPlayerIdToCheck)
 			return true;
 	}
 	return false;
@@ -339,12 +346,12 @@ function addFriendToRequest(pFriendID, pPlayerID)
 
 	for (var i = 0; i < requests.length; i++)
 	{
-		if (requests[i].type == "friendship" && requests[i].args.PlayFabID == pPlayerID) // User already in friend request list
+		if (requests[i].type == 1 && requests[i].args.PlayFabID == pPlayerID) // User already in friend request list
 			return;
 	}
 	
 	requests.push({
-		type : "friendship",
+		type : 1, //1 == friendship, cf BaseNotificationManager.cs => NotificationType
 		args : {"PlayFabID" : pPlayerID}
 	});
 
@@ -358,7 +365,7 @@ function removeFriendFromRequests(pPlayerID, pFriendID)
 	var found = false;
 	for (var i = 0; i < requests.length; i++)
 	{
-		if (requests[i].type == "friendship" && requests[i].args.PlayFabID == pFriendID)
+		if (requests[i].type == 1 && requests[i].args.PlayFabID == pFriendID)
 		{
 			requests.splice(i, 1);
 			found = true;
