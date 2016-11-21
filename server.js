@@ -152,7 +152,7 @@ handlers.getNotifications = function(pArgs)
 	{
 		PlayFabId: currentPlayerId,
         Data: {
-            "Notifications": "{}"
+            "Notifications": notificationsToKeep
         },
 		Permission:"Public"
 	});
