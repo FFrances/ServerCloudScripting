@@ -325,7 +325,7 @@ handlers.addFriend = function(args)
 	}
 	else {
 		addFriendToRequest(playfabIDReceiver, playfabIDSender);
-		var msg = pPlayerID + " requested to be your friend";
+
 		try {	
 			server.SendPushNotification(
 			{
