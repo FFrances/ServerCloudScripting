@@ -119,7 +119,7 @@ handlers.startNewGame = function(args)
 
 /*
 ** Notifications functions
-** NotificationType {
+** NotificationType {cf BaseNotificationManager.cs => NotificationType
 	friendship = 1,
 	fight = 2,
 	local = 4
@@ -308,7 +308,8 @@ handlers.addFriend = function(args)
 {
 	var playfabIDSender = currentPlayerId;
 	var playfabIDReceiver = args.FriendPlayFabId;
-
+	var msg = args.NotificationMessage;
+	
 	var friendshipAccepted = false;
 	if (checkIfPlayerRequestedFriendship(playfabIDSender, playfabIDReceiver) === true)
 	{
@@ -324,6 +325,16 @@ handlers.addFriend = function(args)
 	}
 	else {
 		addFriendToRequest(playfabIDReceiver, playfabIDSender);
+		var msg = pPlayerID + " requested to be your friend";
+		try {	
+			server.SendPushNotification(
+			{
+				Recipient: pFriendID,
+				Message: msg
+			});
+		} catch (err) {
+
+		}
 	}
 	return {isNowFriend:friendshipAccepted};
 };
@@ -354,7 +365,7 @@ function addFriendToRequest(pFriendID, pPlayerID)
 		type : 1, //1 == friendship, cf BaseNotificationManager.cs => NotificationType
 		args : {"PlayFabID" : pPlayerID}
 	});
-
+	
 	updateFieldInNotifications(pFriendID, "requests", requests);
 }
 
