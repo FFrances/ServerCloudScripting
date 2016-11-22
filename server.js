@@ -243,7 +243,7 @@ handlers.sendFightRequest = function(pArgs)
 	
 	updateFieldInNotifications(friendID, "requests", requests);
 	
-	var error = "";
+	var error;
 	
 	try {	
 		server.SendPushNotification(
@@ -255,7 +255,7 @@ handlers.sendFightRequest = function(pArgs)
 		error = err;
 	}
 	return {Success:true,Error:JSON.stringify(error)};
-};
+}; 
 
 /*
 ** Friends functions
@@ -326,6 +326,7 @@ handlers.addFriend = function(args)
 	else {
 		addFriendToRequest(playfabIDReceiver, playfabIDSender);
 
+		var error = "";
 		try {	
 			server.SendPushNotification(
 			{
@@ -333,10 +334,10 @@ handlers.addFriend = function(args)
 				Message: msg
 			});
 		} catch (err) {
-
+			error = err;
 		}
 	}
-	return {isNowFriend:friendshipAccepted};
+	return {isNowFriend:friendshipAccepted, Error:JSON.stringify(error)};
 };
 
 function checkIfPlayerRequestedFriendship(pPlayerId, pPlayerIdToCheck)
