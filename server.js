@@ -329,7 +329,7 @@ handlers.addFriend = function(args)
 		try {	
 			server.SendPushNotification(
 			{
-				Recipient: pFriendID,
+				Recipient: playfabIDReceiver,
 				Message: msg
 			});
 		} catch (err) {
