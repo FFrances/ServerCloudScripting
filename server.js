@@ -244,7 +244,6 @@ handlers.sendFightRequest = function(pArgs)
 	updateFieldInNotifications(friendID, "requests", requests);
 	
 	var error;
-	
 	try {	
 		server.SendPushNotification(
 		{
