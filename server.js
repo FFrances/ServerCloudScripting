@@ -279,6 +279,7 @@ handlers.getFriendsStatistics = function(args)
 		}
 		catch(e) {}
 	}
+	playerStatistics = playerStatistics.filter(function(n) {return n !== undefined;});
 	return {playerStatistics};
 };
 
