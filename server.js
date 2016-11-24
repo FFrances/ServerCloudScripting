@@ -265,15 +265,19 @@ handlers.getFriendsStatistics = function(args)
 	var playerStatistics = [];
 	for (var i = 0; i < playfabID.length; i++)
 	{
-		playerStatistics[i] = server.GetPlayerStatistics({
-			PlayFabId: playfabID[i],
-			StatisticNames: [
-				"Xp",
-				"Rank"
-			]
-		});
-		var info = server.GetUserAccountInfo({PlayFabId : playfabID[i]});
-		playerStatistics[i]["TitleDisplayName"] = info.UserInfo.TitleInfo.DisplayName;
+		try 
+		{
+			playerStatistics[i] = server.GetPlayerStatistics({
+				PlayFabId: playfabID[i],
+				StatisticNames: [
+					"Xp",
+					"Rank"
+				]
+			});
+			var info = server.GetUserAccountInfo({PlayFabId : playfabID[i]});
+			playerStatistics[i]["TitleDisplayName"] = info.UserInfo.TitleInfo.DisplayName;
+		}
+		catch(e) {}
 	}
 	return {playerStatistics};
 };
