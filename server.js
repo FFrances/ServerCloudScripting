@@ -395,6 +395,52 @@ function removeFriendFromRequests(pPlayerID, pFriendID)
 	return found;
 }
 
+handlers.applyTimeBonus = function(args)
+{
+	var timestamp = args.Timestamp;
+	var playerData = server.GetUserReadOnlyData({
+        PlayFabId: currentPlayerId,
+        Keys: ["cityMap", "defMap", "whaleMap", "mineMap", "mantaMap"]
+    });
+	
+	var cityMap = applyTimeBonusOnMap(timestamp, playerData.Data["cityMap"]);
+	var defMap = applyTimeBonusOnMap(timestamp, playerData.Data["defMap"]);
+	var whaleMap = applyTimeBonusOnMap(timestamp, playerData.Data["whaleMap"]);
+	var mineMap = applyTimeBonusOnMap(timestamp, playerData.Data["mineMap"]);
+	var mantaMap = applyTimeBonusOnMap(timestamp, playerData.Data["mantaMap"]);
+
+	server.UpdateUserReadOnlyData({
+        PlayFabId: currentPlayerId,
+        Data: {
+            "cityMap": JSON.stringify(cityMap),
+			"defMap": JSON.stringify(defMap),
+			"whaleMap": JSON.stringify(whaleMap),
+			"mineMap": JSON.stringify(mineMap),
+			"mantaMap": JSON.stringify(mantaMap)
+        },
+		Permission:"Public"
+    });
+	
+	return ""; // Returning empty string so we know if the function crashed
+};
+
+function applyTimeBonusOnMap(pTimestamp, pMap)
+{
+	if (pMap === undefined)
+		return createEmptyMap();
+	
+	var playerDataCityMap = JSON.parse(pMap.Value);
+	
+	for (var it = 0; it < playerDataCityMap.entitiesOnMap.length; it++)
+	{
+		var ts = playerDataCityMap.entitiesOnMap[it].timestamp;
+		
+		playerDataCityMap.entitiesOnMap[it].timestamp = ts - pTimestamp;
+	}
+	
+	return playerDataCityMap;
+}
+
 handlers.addCityBuilding = function(args)
 {
 	var entity = args;
