@@ -293,6 +293,7 @@ handlers.removeFriend = function(args)
 	}
 	catch (err) {
 		succeed = false;
+		log.info(JSON.stringify(err));
 	}
 	
 	try {
@@ -300,6 +301,7 @@ handlers.removeFriend = function(args)
 	}
 	catch (err) {
 		succeed = false;
+		log.info(JSON.stringify(err));
 	}
 
 	return {hasBeenRemoved:succeed};
